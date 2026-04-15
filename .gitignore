@@ -1,0 +1,18 @@
+# Dependências
+node_modules/
+
+# Build/pack artifacts
+*.tgz
+
+# Arquivo .skill (gerado localmente, não precisa estar no repo)
+*.skill
+
+# Configurações locais do Claude Code (contém permissões específicas da máquina)
+.claude/settings.local.json
+
+# Zip temporário
+.claude.zip
+
+# Sistema
+.DS_Store
+Thumbs.db
