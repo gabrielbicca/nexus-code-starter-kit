@@ -72,13 +72,42 @@ function countDir(dir, ext) {
   return fs.readdirSync(dir).filter((f) => !ext || f.endsWith(ext)).length;
 }
 
+// ---------- gerar bloco Obsidian para o CLAUDE.md ----------
+function blocoObsidian(vaultPath) {
+  return `
+---
+
+## 🧠 Cérebro Externo — Obsidian
+
+A vault do Obsidian é o ponto central de documentação do projeto.
+Consulte antes de tomar decisões técnicas. Atualize após qualquer implementação.
+
+| Item | Valor |
+|---|---|
+| Vault local | \`${vaultPath}\` |
+| MCP REST API | \`http://localhost:27123/sse\` (requer Obsidian aberto) |
+| MCP Filesystem | lê direto de \`${vaultPath}\` (sem precisar abrir o app) |
+
+### Estrutura da vault
+
+\`\`\`
+📄 README.md              → MOC central do projeto
+📁 00_Meta/               → Templates e convenções
+📁 01_Architecture/       → ADRs e diagramas
+📁 02_Specs/              → Feature specs e guias
+📁 03_Sprint_Logs/        → Diários de sprint
+📁 04_Assets/             → Imagens e diagramas exportados
+\`\`\`
+
+> **Regra:** Antes de qualquer decisão técnica → consulte a vault.
+> Antes de concluir qualquer implementação → atualize a vault.
+`;
+}
+
 // ============================================================
 async function main() {
-  const args = process.argv.slice(2);
-  const modoObsidian = args.includes("--obsidian");
-
   process.stdout.write("\x1Bc"); // clear
-  header("🚀 CLAUDE CODE STARTER KIT");
+  header("🚀 NEXUS CODE STARTER KIT");
   console.log("  Instala agentes, skills e commands do Claude Code");
   console.log("  no projeto que você escolher.\n");
 
@@ -138,9 +167,17 @@ async function main() {
       const porta = await ask("  Porta do servidor de desenvolvimento", "3000");
       const data  = new Date().toISOString().slice(0, 10);
 
+      // ---------- Obsidian ----------
+      console.log();
+      const usarObsidian = await askSN("  Usar Obsidian como cérebro externo do projeto?");
+      let vaultPath = "";
+      if (usarObsidian) {
+        vaultPath = await ask("  Caminho da vault do Obsidian (ex: C:\\Users\\voce\\Obsidian\\Projetos\\" + nome + ")");
+      }
+
       const md = `# CLAUDE.md — ${nome}
 
-> Gerado em ${data} via Claude Code Starter Kit.
+> Gerado em ${data} via Nexus Code Starter Kit.
 > **Leia este arquivo completo antes de qualquer ação no projeto.**
 
 ---
@@ -154,7 +191,7 @@ async function main() {
 | Stack | ${stack} |
 | Porta dev | ${porta} |
 | Criado em | ${data} |
-
+${usarObsidian ? blocoObsidian(vaultPath) : ""}
 ---
 
 ## ⚙️ Protocolo Obrigatório
@@ -186,16 +223,39 @@ Para bug fixes simples (typo, estilo, ajuste isolado), pode pular.
 `;
       fs.writeFileSync(claudeMdPath, md, "utf8");
       ok("CLAUDE.md gerado");
+
+      // ---------- gerar .mcp.json se Obsidian configurado ----------
+      if (usarObsidian && vaultPath) {
+        const mcpJson = {
+          mcpServers: {
+            obsidian: {
+              command: "npx",
+              args: ["-y", "@modelcontextprotocol/server-obsidian", vaultPath],
+              description: "Obsidian MCP - Modo Filesystem (sem precisar do app aberto)"
+            },
+            "obsidian-rest": {
+              command: "npx",
+              args: ["-y", "mcp-obsidian"],
+              env: {
+                OBSIDIAN_API_KEY: "",
+                OBSIDIAN_HOST: "http://localhost",
+                OBSIDIAN_PORT: "27123"
+              },
+              description: "Obsidian MCP - Modo REST API (requer Obsidian aberto com plugin Local REST API)"
+            }
+          }
+        };
+        fs.writeFileSync(
+          path.join(destino, ".mcp.json"),
+          JSON.stringify(mcpJson, null, 2),
+          "utf8"
+        );
+        ok(".mcp.json gerado com configuração do Obsidian MCP");
+        aviso("Preencha OBSIDIAN_API_KEY no .mcp.json para usar o modo REST API");
+      }
     }
   } else {
     info("CLAUDE.md já existe — preservado.");
-  }
-
-  // ---------- Obsidian ----------
-  if (modoObsidian) {
-    console.log();
-    aviso("Modo --obsidian: configure manualmente o .mcp.json com o caminho da sua vault.");
-    info("Consulte: setup_obsidian.ps1 no repositório para o passo a passo.");
   }
 
   // ---------- resumo ----------
