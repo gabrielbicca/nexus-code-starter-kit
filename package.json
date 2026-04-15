@@ -1,8 +1,15 @@
 {
   "name": "nexus-code-starter-kit",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "Kit de agentes, skills e commands para o Claude Code. Instala a estrutura padrão em projetos novos ou existentes.",
-  "keywords": ["claude", "claude-code", "ai", "agents", "starter-kit", "nexus"],
+  "keywords": [
+    "claude",
+    "claude-code",
+    "ai",
+    "agents",
+    "starter-kit",
+    "nexus"
+  ],
   "author": "gabrielbicca",
   "license": "MIT",
   "homepage": "https://github.com/gabrielbicca/nexus-code-starter-kit#readme",
