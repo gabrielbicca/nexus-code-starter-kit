@@ -10,7 +10,9 @@ const fs   = require("fs");
 const path = require("path");
 const readline = require("readline");
 
-const KIT_DIR = path.resolve(__dirname, "..");
+const KIT_DIR     = path.resolve(__dirname, "..");
+const KIT_PKG     = require(path.join(KIT_DIR, "package.json"));
+const KIT_VERSION = KIT_PKG.version;
 
 // ---------- helpers ----------
 const cyan    = (s) => `\x1b[36m${s}\x1b[0m`;
@@ -30,6 +32,39 @@ const ok    = (s) => console.log(green(`  ✓ ${s}`));
 const aviso = (s) => console.log(magenta(`  ! ${s}`));
 const info  = (s) => console.log(gray(`  → ${s}`));
 
+// ---------- argv parsing ----------
+const argv = process.argv.slice(2);
+
+if (argv.includes("--version") || argv.includes("-v")) {
+  console.log(KIT_VERSION);
+  process.exit(0);
+}
+
+if (argv.includes("--help") || argv.includes("-h")) {
+  console.log(`
+nexus-code-starter-kit v${KIT_VERSION}
+
+Uso:
+  npx nexus-code-starter-kit [opções]
+
+Opções:
+  -h, --help       Mostra esta ajuda
+  -v, --version    Mostra a versão do kit
+
+Fluxo interativo:
+  1. Escolha o diretório do projeto.
+  2. Se .claude/ já existe, oferece três opções:
+       merge        → só adiciona arquivos novos (preserva existentes)
+       sobrescrever → atualiza TODOS os agentes/skills/commands
+       cancelar
+  3. Opcionalmente gera CLAUDE.md (não toca se já existir).
+  4. Grava .claude/.kit-version com a versão instalada.
+
+Repo: https://github.com/gabrielbicca/nexus-code-starter-kit
+`);
+  process.exit(0);
+}
+
 const rl = readline.createInterface({ input: process.stdin, output: process.stdout });
 
 const ask = (question, def = "") =>
@@ -46,25 +81,43 @@ const askSN = async (question, def = "S") => {
   return (ans.toUpperCase() || def.toUpperCase()) === "S";
 };
 
-// ---------- copiar pasta recursivamente (não sobrescreve) ----------
+// ---------- copy directory recursively ----------
+// Files/dirs that look like local-machine artifacts — never copy to target.
+const SKIP_NAMES = new Set([
+  "settings.local.json",
+  ".kit-version",
+  ".npmignore",
+  "__pycache__",
+  ".DS_Store",
+  "Thumbs.db",
+]);
+const SKIP_EXTENSIONS = [".pyc", ".pyo", ".pyd"];
+
+function shouldSkip(name) {
+  if (SKIP_NAMES.has(name)) return true;
+  return SKIP_EXTENSIONS.some((ext) => name.endsWith(ext));
+}
+
 function copyDir(src, dest, overwrite = false) {
-  let added = 0;
+  let written = 0;
   const entries = fs.readdirSync(src, { withFileTypes: true });
   for (const entry of entries) {
+    if (shouldSkip(entry.name)) continue;
     const srcPath  = path.join(src, entry.name);
     const destPath = path.join(dest, entry.name);
     if (entry.isDirectory()) {
       if (!fs.existsSync(destPath)) fs.mkdirSync(destPath, { recursive: true });
-      added += copyDir(srcPath, destPath, overwrite);
+      written += copyDir(srcPath, destPath, overwrite);
     } else {
-      if (overwrite || !fs.existsSync(destPath)) {
+      const exists = fs.existsSync(destPath);
+      if (overwrite || !exists) {
         fs.mkdirSync(path.dirname(destPath), { recursive: true });
         fs.copyFileSync(srcPath, destPath);
-        added++;
+        written++;
       }
     }
   }
-  return added;
+  return written;
 }
 
 function countDir(dir, ext) {
@@ -72,7 +125,33 @@ function countDir(dir, ext) {
   return fs.readdirSync(dir).filter((f) => !ext || f.endsWith(ext)).length;
 }
 
-// ---------- gerar bloco Obsidian para o CLAUDE.md ----------
+// ---------- version helpers ----------
+function readInstalledVersion(destClaude) {
+  const f = path.join(destClaude, ".kit-version");
+  if (!fs.existsSync(f)) return null;
+  try {
+    const v = fs.readFileSync(f, "utf8").trim();
+    return /^\d+\.\d+\.\d+/.test(v) ? v : null;
+  } catch {
+    return null;
+  }
+}
+
+function compareVersions(a, b) {
+  const pa = a.split(".").map((n) => parseInt(n, 10) || 0);
+  const pb = b.split(".").map((n) => parseInt(n, 10) || 0);
+  for (let i = 0; i < 3; i++) {
+    if (pa[i] > pb[i]) return 1;
+    if (pa[i] < pb[i]) return -1;
+  }
+  return 0;
+}
+
+function writeKitVersion(destClaude) {
+  fs.writeFileSync(path.join(destClaude, ".kit-version"), KIT_VERSION + "\n", "utf8");
+}
+
+// ---------- Obsidian block for generated CLAUDE.md ----------
 function blocoObsidian(vaultPath) {
   return `
 ---
@@ -105,7 +184,7 @@ Consulte antes de tomar decisões técnicas. Atualize após qualquer implementa�
 // ============================================================
 async function main() {
   process.stdout.write("\x1Bc"); // clear
-  header("🚀 NEXUS CODE STARTER KIT");
+  header(`🚀 NEXUS CODE STARTER KIT v${KIT_VERSION}`);
   console.log("  Instala agentes, skills e commands do Claude Code");
   console.log("  no projeto que você escolher.\n");
 
@@ -126,15 +205,50 @@ async function main() {
   const destClaude = path.join(destino, ".claude");
   const jaTem      = fs.existsSync(destClaude);
 
+  // ---------- decidir modo: install fresh / merge / overwrite ----------
+  let overwrite = false;
+
   if (jaTem) {
-    aviso(".claude/ já existe neste projeto.");
-    const ok2 = await askSN("  Atualizar? (novos arquivos adicionados, existentes preservados)");
-    if (!ok2) { console.log("  Cancelado."); rl.close(); return; }
+    const installedVersion = readInstalledVersion(destClaude);
+
+    if (installedVersion) {
+      const cmp = compareVersions(KIT_VERSION, installedVersion);
+      if (cmp > 0) {
+        aviso(`Versão instalada: v${installedVersion}. Disponível: v${KIT_VERSION}.`);
+      } else if (cmp === 0) {
+        info(`.claude/ está em v${installedVersion} (já é a atual).`);
+      } else {
+        aviso(`Versão instalada (v${installedVersion}) é mais nova que o kit (v${KIT_VERSION}).`);
+      }
+    } else {
+      aviso(".claude/ existe sem marcador de versão (provavelmente instalado em <1.5.0).");
+    }
+
+    console.log();
+    console.log(`  ${bold("[m]")} Merge        — só adiciona arquivos novos, preserva existentes`);
+    console.log(`  ${bold("[s]")} Sobrescrever — atualiza TODOS os agentes/skills/commands`);
+    console.log(`  ${bold("[c]")} Cancelar`);
+    console.log();
+    const choice = (await ask("  Escolha", "m")).toLowerCase();
+
+    if (choice === "c") {
+      console.log("  Cancelado."); rl.close(); return;
+    }
+    if (!["m", "s"].includes(choice)) {
+      console.log("  Opção inválida. Cancelado."); rl.close(); return;
+    }
+
+    if (choice === "s") {
+      console.log();
+      const confirmar = await askSN("  Confirma sobrescrever TODOS os arquivos do kit?", "N");
+      if (!confirmar) { console.log("  Cancelado."); rl.close(); return; }
+      overwrite = true;
+    }
   }
 
   console.log();
 
-  // ---------- copiar .claude ----------
+  // ---------- copy .claude ----------
   const origemClaude = path.join(KIT_DIR, ".claude");
 
   if (!fs.existsSync(origemClaude)) {
@@ -144,13 +258,23 @@ async function main() {
 
   if (!fs.existsSync(destClaude)) fs.mkdirSync(destClaude, { recursive: true });
 
-  const added = copyDir(origemClaude, destClaude, false);
+  const written   = copyDir(origemClaude, destClaude, overwrite);
   const nAgents   = countDir(path.join(destClaude, "agents"));
   const nSkills   = countDir(path.join(destClaude, "skills"));
   const nCommands = countDir(path.join(destClaude, "commands"));
 
-  ok(jaTem ? `.claude/ atualizado (${added} novos arquivos)` : ".claude/ instalado");
+  if (!jaTem) {
+    ok(".claude/ instalado");
+  } else if (overwrite) {
+    ok(`.claude/ sobrescrito (${written} arquivos atualizados)`);
+  } else {
+    ok(`.claude/ atualizado (${written} novos arquivos adicionados)`);
+  }
   info(`${nAgents} agentes  |  ${nSkills} skills  |  ${nCommands} commands`);
+
+  // ---------- gravar marcador de versão ----------
+  writeKitVersion(destClaude);
+  info(`marcador gravado em .claude/.kit-version (v${KIT_VERSION})`);
 
   // ---------- CLAUDE.md ----------
   console.log();
@@ -165,7 +289,6 @@ async function main() {
       const porta = await ask("  Porta do servidor de desenvolvimento", "3000");
       const data  = new Date().toISOString().slice(0, 10);
 
-      // ---------- Obsidian ----------
       console.log();
       const usarObsidian = await askSN("  Usar Obsidian como cérebro externo do projeto?");
       let vaultPath = "";
@@ -175,7 +298,7 @@ async function main() {
 
       const md = `# CLAUDE.md — ${nome}
 
-> Gerado em ${data} via Nexus Code Starter Kit.
+> Gerado em ${data} via Nexus Code Starter Kit v${KIT_VERSION}.
 > **Leia este arquivo completo antes de qualquer ação no projeto.**
 
 ---
@@ -226,10 +349,11 @@ Para bug fixes simples (typo, estilo, ajuste isolado), pode pular.
     info("CLAUDE.md já existe — preservado.");
   }
 
-  // ---------- resumo ----------
+  // ---------- summary ----------
   console.log();
   header("✅ KIT INSTALADO!");
-  console.log(`  ${bold("Projeto:")} ${destino}\n`);
+  console.log(`  ${bold("Projeto:")} ${destino}`);
+  console.log(`  ${bold("Versão:")}  v${KIT_VERSION}\n`);
   console.log(yellow("  Próximos passos:\n"));
   console.log(`  ${bold("1.")} Abra o projeto no Claude Code:`);
   console.log(gray(`     claude "${destino}"\n`));

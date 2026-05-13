@@ -156,6 +156,24 @@ $n_skills   = (Get-ChildItem "$destino_claude\skills" -Directory -ErrorAction Si
 $n_commands = (Get-ChildItem "$destino_claude\commands" -Filter "*.md" -ErrorAction SilentlyContinue).Count
 Write-Info "$n_agents agentes  |  $n_skills skills  |  $n_commands commands"
 
+# ---------- Gravar marcador de versão ----------
+$kit_version = $null
+try {
+    if ($via_pipe) {
+        $pkg_json_path = Join-Path $kit_extraido.FullName "package.json"
+    } else {
+        $pkg_json_path = Join-Path $KIT_LOCAL "package.json"
+    }
+    if (Test-Path $pkg_json_path) {
+        $kit_version = (Get-Content $pkg_json_path -Raw | ConvertFrom-Json).version
+    }
+} catch { $kit_version = $null }
+
+if ($kit_version) {
+    Set-Content -Path (Join-Path $destino_claude ".kit-version") -Value $kit_version -Encoding UTF8 -NoNewline
+    Write-Info "marcador gravado em .claude/.kit-version (v$kit_version)"
+}
+
 # ---------- CLAUDE.md ----------
 Write-Host ""
 $claude_md_path = Join-Path $destino "CLAUDE.md"

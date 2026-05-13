@@ -75,6 +75,31 @@ Para qualquer feature nova, invoque o orchestrator:
 
 ---
 
+## Atualizando um projeto existente
+
+Rode o instalador de novo no mesmo diretório:
+
+```bash
+npx nexus-code-starter-kit
+```
+
+O CLI detecta `.claude/` e mostra três opções:
+
+- **Merge** — só adiciona arquivos novos (preserva os existentes — modo seguro padrão).
+- **Sobrescrever** — substitui TODOS os agentes, skills e commands pela versão atual do kit. Use quando quiser receber fixes (ex.: correções do `orchestrator.md`).
+- **Cancelar** — sai sem mexer em nada.
+
+A versão instalada fica gravada em `.claude/.kit-version`. Quando você roda o CLI numa versão antiga, ele avisa qual versão está e qual está disponível.
+
+Outras flags úteis:
+
+```bash
+npx nexus-code-starter-kit --version    # versão do kit
+npx nexus-code-starter-kit --help       # ajuda completa
+```
+
+---
+
 ## Documentação
 
 | Arquivo | Conteúdo |
@@ -82,6 +107,8 @@ Para qualquer feature nova, invoque o orchestrator:
 | [`docs/CLAUDE.template.md`](docs/CLAUDE.template.md) | Template do CLAUDE.md do projeto |
 | [`docs/NEW_PROJECT_BOOTSTRAP.md`](docs/NEW_PROJECT_BOOTSTRAP.md) | Guia detalhado para projetos novos |
 | [`docs/PROJECT_MIGRATION.md`](docs/PROJECT_MIGRATION.md) | Guia detalhado para migração |
+| [`docs/CREATING_SKILLS.md`](docs/CREATING_SKILLS.md) | Como criar suas próprias skills |
+| [`CONTRIBUTING.md`](CONTRIBUTING.md) | Guia de contribuição |
 
 ---
 

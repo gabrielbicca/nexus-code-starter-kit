@@ -6,6 +6,21 @@ Formato baseado em [Keep a Changelog](https://keepachangelog.com/pt-BR/1.0.0/).
 
 ---
 
+## [1.5.0] — 2026-05-13
+
+### Adicionado
+- **Caminho de atualização** — CLI agora detecta `.claude/` existente e oferece prompt 3-way: **Merge** (só adiciona arquivos novos, preserva existentes — padrão antigo), **Sobrescrever** (atualiza TODOS os agentes/skills/commands — útil pra puxar fixes do orchestrator), **Cancelar**.
+- **Marcador de versão** — `.claude/.kit-version` é gravado no projeto-alvo após install/update. CLI e `install.ps1` ambos escrevem. Quando o CLI roda num projeto desatualizado, mostra a versão instalada vs. disponível.
+- **Flags `--help` / `--version`** no `bin/cli.js`.
+- **`CONTRIBUTING.md`** — guia de contribuição (o que aceitamos, convenções, fluxo de release).
+- **`docs/CREATING_SKILLS.md`** — tutorial sobre criar skills (movido de `.claude/skills/doc.md`, que quebrava o padrão "skill = pasta").
+
+### Alterado
+- `README.md` — nova seção "Atualizando um projeto existente" documentando o fluxo merge/sobrescrever; link pra `CONTRIBUTING.md` e `docs/CREATING_SKILLS.md`.
+- `install.ps1` — também grava `.kit-version` (paridade com o CLI Node).
+
+---
+
 ## [1.4.0] — 2026-05-13
 
 ### Alterado
