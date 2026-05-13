@@ -4,6 +4,9 @@ on:
   push:
     tags:
       - "v*"
+  # Disparo manual: faz só dry-run, util pra verificar autenticacao
+  # do NPM_TOKEN sem publicar de fato.
+  workflow_dispatch:
 
 jobs:
   publish:
@@ -26,7 +29,13 @@ jobs:
       - name: Drift guard
         run: node scripts/check-drift.js
 
-      - name: Publish
-        run: npm publish --access public --provenance
+      - name: Publish (real on tag, dry-run on manual)
+        run: |
+          if [ "${{ github.event_name }}" = "workflow_dispatch" ]; then
+            echo "Manual dispatch → dry-run para verificar auth"
+            npm publish --dry-run --access public
+          else
+            npm publish --access public --provenance
+          fi
         env:
           NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
