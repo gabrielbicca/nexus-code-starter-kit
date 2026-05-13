@@ -23,9 +23,9 @@ irm https://raw.githubusercontent.com/gabrielbicca/nexus-code-starter-kit/main/i
 
 ```
 .claude/
-├── agents/      → 20 agentes especializados (@orchestrator, @backend-specialist, ...)
+├── agents/      → 21 agentes especializados (@orchestrator, @backend-specialist, ...)
 ├── commands/    → 11 slash commands (/plan, /debug, /deploy, ...)
-├── skills/      → 30+ cápsulas de conhecimento técnico
+├── skills/      → 38 cápsulas de conhecimento técnico
 └── scripts/     → Scripts de verificação e automação
 ```
 
@@ -55,6 +55,7 @@ irm https://raw.githubusercontent.com/gabrielbicca/nexus-code-starter-kit/main/i
 | `@mobile-developer` | React Native, Expo, Flutter |
 | `@game-developer` | Unity, Godot, Phaser, Three.js |
 | `@penetration-tester` | Pentest e segurança ofensiva |
+| `@n8n-specialist` | Workflows n8n (automations, webhooks, chatbots, ETL) |
 
 ---
 

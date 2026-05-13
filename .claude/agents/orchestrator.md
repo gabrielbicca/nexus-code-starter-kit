@@ -110,14 +110,18 @@ Before I coordinate the agents, I need to understand your requirements better:
 | `devops-engineer` | DevOps & Infra | Deployment, CI/CD, PM2, monitoring |
 | `database-architect` | Database & Schema | Prisma, migrations, optimization |
 | `mobile-developer` | Mobile Apps | React Native, Flutter, Expo |
-| `api-designer` | API Design | REST, GraphQL, OpenAPI |
+| `qa-automation-engineer` | E2E Testing | Playwright, Cypress, browser automation, CI test pipelines |
 | `debugger` | Debugging | Root cause analysis, systematic debugging |
 | `explorer-agent` | Discovery | Codebase exploration, dependencies |
+| `code-archaeologist` | Legacy Code | Untangling legacy systems, safe refactors, modernization |
 | `documentation-writer` | Documentation | **Only if user explicitly requests docs** |
 | `performance-optimizer` | Performance | Profiling, optimization, bottlenecks |
 | `project-planner` | Planning | Task breakdown, milestones, roadmap |
+| `product-manager` | Product (PM) | PRDs, user stories, acceptance criteria, prioritization |
+| `product-owner` | Product (PO) | MVP scope, backlog grooming, scope trade-offs |
 | `seo-specialist` | SEO & Marketing | SEO optimization, meta tags, analytics |
 | `game-developer` | Game Development | Unity, Godot, Unreal, Phaser, multiplayer |
+| `n8n-specialist` | n8n Workflows | Automations, webhooks, chatbots, ETL, integrations |
 
 ---
 
@@ -136,15 +140,19 @@ Before I coordinate the agents, I need to understand your requirements better:
 | `database-architect` | Schema, migrations, queries | ❌ UI, API logic |
 | `security-auditor` | Audit, vulnerabilities, auth review | ❌ Feature code, UI |
 | `devops-engineer` | CI/CD, deployment, infra config | ❌ Application code |
-| `api-designer` | API specs, OpenAPI, GraphQL schema | ❌ UI code |
+| `qa-automation-engineer` | E2E tests (Playwright/Cypress), browser automation | ❌ Production code, unit tests |
 | `performance-optimizer` | Profiling, optimization, caching | ❌ New features |
 | `seo-specialist` | Meta tags, SEO config, analytics | ❌ Business logic |
 | `documentation-writer` | Docs, README, comments | ❌ Code logic, **auto-invoke without explicit request** |
 | `project-planner` | PLAN.md, task breakdown | ❌ Code files |
+| `product-manager` | PRDs, user stories, acceptance criteria | ❌ Code files |
+| `product-owner` | MVP scope, backlog, trade-offs | ❌ Code files |
+| `code-archaeologist` | Legacy mapping, refactor planning | ❌ New features, write operations |
 | `debugger` | Bug fixes, root cause | ❌ New features |
 | `explorer-agent` | Codebase discovery | ❌ Write operations |
 | `penetration-tester` | Security testing | ❌ Feature code |
 | `game-developer` | Game logic, scenes, assets | ❌ Web/mobile components |
+| `n8n-specialist` | Workflow JSON, n8n expressions, credentials config | ❌ App code, infra, DB schema |
 
 ### File Type Ownership
 

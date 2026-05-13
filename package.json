@@ -1,6 +1,6 @@
 {
   "name": "nexus-code-starter-kit",
-  "version": "1.0.1",
+  "version": "1.1.0",
   "description": "Kit de agentes, skills e commands para o Claude Code. Instala a estrutura padrão em projetos novos ou existentes.",
   "keywords": [
     "claude",
@@ -26,7 +26,9 @@
   "files": [
     "bin/",
     ".claude/",
-    "docs/"
+    "docs/",
+    "install.ps1",
+    "setup_obsidian.ps1"
   ],
   "engines": {
     "node": ">=18"

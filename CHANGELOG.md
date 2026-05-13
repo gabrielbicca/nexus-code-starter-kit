@@ -6,6 +6,20 @@ Formato baseado em [Keep a Changelog](https://keepachangelog.com/pt-BR/1.0.0/).
 
 ---
 
+## [1.1.0] — 2026-05-13
+
+### Adicionado
+- Novo agente `@n8n-specialist` — especialista em workflows n8n (automations, webhooks, chatbots, ETL, integrações). Cobre node selection, expressions, credentials, sub-workflows, error handling, idempotência, queue mode e versionamento de workflows.
+- `orchestrator.md` atualizado com o novo agente na tabela de agentes disponíveis e nas regras de boundaries.
+
+### Corrigido
+- `orchestrator.md`: removida referência ao agente inexistente `api-designer` das tabelas "Available Agents" e "Agent Boundary Enforcement".
+- `orchestrator.md`: adicionados agentes que estavam ausentes das tabelas — `code-archaeologist`, `product-manager`, `product-owner`, `qa-automation-engineer`.
+- `README.md`: contagem de agentes atualizada (20 → 21) e de skills (30+ → 38); `@n8n-specialist` incluído na tabela de agentes.
+- `package.json`: `install.ps1` e `setup_obsidian.ps1` adicionados ao campo `files` para que sejam distribuídos via `npm`/`npx`.
+
+---
+
 ## [1.0.0] — 2026-04-15
 
 ### Adicionado
