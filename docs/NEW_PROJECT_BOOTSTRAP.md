@@ -124,7 +124,7 @@ USING (
 | Auth | Supabase Auth (JWT padrão — sem custom hook) |
 | Infra | Supabase Self-Hosted em VPS + Coolify |
 | Agente | Claude Code (`.claude/agents/`) |
-| Docs | Obsidian vault (cérebro externo, MCP via SSE) |
+| Docs | Obsidian vault (cérebro externo) |
 | i18n | next-intl cookie-based (default `en`) |
 
 ---
@@ -165,7 +165,6 @@ Ao criar o vault de um novo projeto, garantir os templates em `00_Meta/`:
 - [ ] Criar subpastas: `00_Meta/`, `01_Architecture/`, `02_Specs/`, `02_Specs/Migrations/`, `03_Sprint_Logs/`, `04_Assets/`
 - [ ] Adicionar templates em `00_Meta/`
 - [ ] Criar `Project-Scope.md` em `02_Specs/` com escopo inicial
-- [ ] Configurar MCP SSE do Obsidian em uma **porta dedicada** para o projeto (não reusar portas de outros projetos)
 
 ### Repo Git
 

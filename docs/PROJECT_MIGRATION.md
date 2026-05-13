@@ -106,7 +106,6 @@ Exemplo de dívidas comuns:
   - `Feature-Spec-Template.md`
   - `Migration-Template.md`
   - `AGENT_FLOW.md`
-- [ ] Configurar **MCP SSE do Obsidian** em uma porta dedicada para este projeto (não reusar portas de outros)
 - [ ] Criar `02_Specs/Project-Scope.md` descrevendo em 1-2 páginas o escopo atual do projeto (o que ele faz hoje, para quem, principais módulos)
 
 ### 2.2 Copiar ferramental Claude Code

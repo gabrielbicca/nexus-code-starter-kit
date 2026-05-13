@@ -6,6 +6,14 @@ Formato baseado em [Keep a Changelog](https://keepachangelog.com/pt-BR/1.0.0/).
 
 ---
 
+## [1.3.0] — 2026-05-13
+
+### Removido
+- **Setup do MCP do Obsidian** — `setup_obsidian.ps1` deletado; tabela `MCP REST API` / `MCP Filesystem` removida do bloco que o CLI injeta no `CLAUDE.md`; geração automática de `.mcp.json` removida do CLI; seção "Configurar Obsidian MCP" removida do README; menções a `MCP via SSE` / "Configurar MCP SSE do Obsidian" removidas de `docs/CLAUDE.template.md`, `docs/NEW_PROJECT_BOOTSTRAP.md`, `docs/PROJECT_MIGRATION.md`.
+- **Motivação:** desacoplar o kit da escolha de mecanismo MCP. A vault do Obsidian segue como cérebro externo do projeto (estrutura de pastas + protocolo de uso), mas o **como** acessá-la (REST API, Filesystem, outro MCP, sem MCP) fica a critério de cada projeto.
+
+---
+
 ## [1.2.0] — 2026-05-13
 
 ### Adicionado

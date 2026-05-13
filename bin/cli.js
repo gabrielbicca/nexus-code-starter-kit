@@ -85,8 +85,6 @@ Consulte antes de tomar decisões técnicas. Atualize após qualquer implementa�
 | Item | Valor |
 |---|---|
 | Vault local | \`${vaultPath}\` |
-| MCP REST API | \`http://localhost:27123/sse\` (requer Obsidian aberto) |
-| MCP Filesystem | lê direto de \`${vaultPath}\` (sem precisar abrir o app) |
 
 ### Estrutura da vault
 
@@ -223,36 +221,6 @@ Para bug fixes simples (typo, estilo, ajuste isolado), pode pular.
 `;
       fs.writeFileSync(claudeMdPath, md, "utf8");
       ok("CLAUDE.md gerado");
-
-      // ---------- gerar .mcp.json se Obsidian configurado ----------
-      if (usarObsidian && vaultPath) {
-        const mcpJson = {
-          mcpServers: {
-            obsidian: {
-              command: "npx",
-              args: ["-y", "@modelcontextprotocol/server-obsidian", vaultPath],
-              description: "Obsidian MCP - Modo Filesystem (sem precisar do app aberto)"
-            },
-            "obsidian-rest": {
-              command: "npx",
-              args: ["-y", "mcp-obsidian"],
-              env: {
-                OBSIDIAN_API_KEY: "",
-                OBSIDIAN_HOST: "http://localhost",
-                OBSIDIAN_PORT: "27123"
-              },
-              description: "Obsidian MCP - Modo REST API (requer Obsidian aberto com plugin Local REST API)"
-            }
-          }
-        };
-        fs.writeFileSync(
-          path.join(destino, ".mcp.json"),
-          JSON.stringify(mcpJson, null, 2),
-          "utf8"
-        );
-        ok(".mcp.json gerado com configuração do Obsidian MCP");
-        aviso("Preencha OBSIDIAN_API_KEY no .mcp.json para usar o modo REST API");
-      }
     }
   } else {
     info("CLAUDE.md já existe — preservado.");

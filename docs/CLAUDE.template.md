@@ -11,12 +11,10 @@
 
 Esta documentação é o **cérebro externo** da aplicação: a fonte de verdade e o contexto que sustenta cada decisão técnica do projeto. Trate-a como um **cérebro vivo** — ela precisa estar sempre atualizada, nunca desatualizada. Toda alteração em schema, RLS, regras de negócio, arquitetura ou infraestrutura **deve** ser refletida aqui imediatamente.
 
-A vault do Obsidian é o ponto central de conexão. Para acessá-la programaticamente:
+A vault do Obsidian é o ponto central de conexão.
 
 | Item | Valor |
 |---|---|
-| Protocolo | MCP via SSE |
-| Endpoint | `http://localhost:<OBSIDIAN_MCP_PORT>/sse` |
 | Vault local | `<CAMINHO_ABSOLUTO_DA_VAULT>` |
 
 > Antes de tomar qualquer decisão técnica, consulte a vault. Antes de concluir qualquer implementação, atualize a vault.

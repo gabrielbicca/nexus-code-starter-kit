@@ -75,20 +75,6 @@ Para qualquer feature nova, invoque o orchestrator:
 
 ---
 
-## Configurar Obsidian MCP (opcional)
-
-Para usar o Obsidian como documentação do projeto:
-
-```powershell
-.\setup_obsidian.ps1
-```
-
-Suporta dois modos automaticamente:
-- **REST API** — quando o Obsidian está aberto (recursos completos)
-- **Filesystem** — sem precisar do app aberto
-
----
-
 ## Documentação
 
 | Arquivo | Conteúdo |
@@ -103,7 +89,7 @@ Suporta dois modos automaticamente:
 
 - [Node.js](https://nodejs.org) 18+
 - [Claude Code](https://claude.ai/download)
-- [Obsidian](https://obsidian.md) *(opcional)*
+- [Obsidian](https://obsidian.md) *(opcional, para documentação)*
 
 ---
 
