@@ -16,3 +16,9 @@ node_modules/
 # Sistema
 .DS_Store
 Thumbs.db
+
+# Python artifacts
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
