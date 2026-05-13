@@ -6,6 +6,18 @@ Formato baseado em [Keep a Changelog](https://keepachangelog.com/pt-BR/1.0.0/).
 
 ---
 
+## [1.4.0] — 2026-05-13
+
+### Alterado
+- `@n8n-specialist` — `description` reformulada para evitar falsos disparos: triggers genéricos (`workflow`, `node`, `trigger`, `expression`, `credential`, `automation`) substituídos pelas variantes prefixadas (`n8n workflow`, `n8n node`, etc.).
+- `@n8n-specialist` — adicionado `WebFetch` ao `tools` do frontmatter. O agente prega "always check the specific provider's current docs" mas não tinha como acessar a web.
+- `@n8n-specialist` — Phase 1 do "Workflow Design Process": `"→ Any unclear → ASK USER"` reescrito como `"return clarifying questions to the caller before building"`, com convenção `[ASSUMPTION: ...]` para quando o caller mandar prosseguir mesmo assim. Semântica funcional em contexto sub-agente.
+
+### Removido
+- `@n8n-specialist` — nota final órfã que prometia "loads relevant skills for detailed guidance" sem listar nenhuma skill (o kit não tem skills relacionadas a n8n).
+
+---
+
 ## [1.3.0] — 2026-05-13
 
 ### Removido
