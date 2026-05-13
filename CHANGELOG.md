@@ -6,6 +6,16 @@ Formato baseado em [Keep a Changelog](https://keepachangelog.com/pt-BR/1.0.0/).
 
 ---
 
+## [1.2.0] — 2026-05-13
+
+### Adicionado
+- **Drift guard** (`scripts/check-drift.js`) — valida que `orchestrator.md` e `README.md` estão em sincronia com os arquivos reais em `.claude/agents/` e `.claude/skills/`. Previne a categoria de bug corrigida em 1.1.0 (`api-designer` fantasma, agentes ausentes das tabelas).
+- **GitHub Actions** — `.github/workflows/ci.yml` roda drift guard + syntax check + `npm publish --dry-run` em PRs e push pra `main`. `.github/workflows/publish.yml` publica no npm automaticamente em tag push `v*` (requer secret `NPM_TOKEN`).
+- **`.npmignore` explícito** — raiz + `.claude/.npmignore` (per-directory). Previne vazamento de `settings.local.json` e outros artefatos para o registro npm.
+- **Scripts npm** — `npm test` (drift guard) e `prepublishOnly` (syntax check + drift guard) garantem que publish quebrado não vai pro registro.
+
+---
+
 ## [1.1.0] — 2026-05-13
 
 ### Adicionado

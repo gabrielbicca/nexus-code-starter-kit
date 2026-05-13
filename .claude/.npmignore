@@ -1,0 +1,11 @@
+# Per-directory ignore for npm pack inside .claude/
+# Root .npmignore is unreliable when a parent dir is in package.json "files".
+
+# Local Claude settings — per-machine, never publish
+settings.local.json
+
+# Python bytecode (defesa em profundidade — .gitignore também cobre)
+**/__pycache__/
+**/*.pyc
+**/*.pyo
+**/*.pyd

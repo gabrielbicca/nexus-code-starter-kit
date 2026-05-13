@@ -1,0 +1,30 @@
+# Source control
+.git/
+.gitignore
+.gitattributes
+.github/
+
+# NOTA: padrões dentro de .claude/ vivem em .claude/.npmignore
+# (npm-packlist trata padrões raiz de forma inconsistente quando
+#  o diretório está declarado em package.json "files").
+
+# Python artifacts (espalhados pelo projeto)
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+
+# Build / pack artifacts
+*.tgz
+.claude.zip
+*.skill
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Editor / IDE
+.vscode/
+.idea/
+*.swp
+*~
