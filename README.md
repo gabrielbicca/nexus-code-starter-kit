@@ -24,10 +24,35 @@ irm https://raw.githubusercontent.com/gabrielbicca/nexus-code-starter-kit/main/i
 ```
 .claude/
 ├── agents/      → 21 agentes especializados (@orchestrator, @backend-specialist, ...)
-├── commands/    → 11 slash commands (/plan, /debug, /deploy, ...)
+├── commands/    → 13 slash commands (/spec, /adr, /plan, /deploy, ...)
 ├── skills/      → 38 cápsulas de conhecimento técnico
-└── scripts/     → Scripts de verificação e automação
+├── scripts/     → Scripts de verificação e automação
+└── context/     → Blocos de contexto importáveis (@imports do CLAUDE.md)
+
+docs/            → Base de conhecimento spec-driven (specs, ADRs, sprint logs)
+CLAUDE.md        → Contexto técnico do projeto (opcional, gerado sob demanda)
 ```
+
+---
+
+## Base de conhecimento (`docs/`)
+
+O kit é **spec-driven**: a documentação é o cérebro do desenvolvimento. Por isso o instalador **sempre** cria a estrutura `docs/` na raiz do projeto — a fonte de verdade, versionada junto com o código:
+
+```
+docs/
+├── README.md          → Índice (mapa da documentação)
+├── 00_Meta/           → Templates (Feature-Spec, ADR, Migration, AGENT_FLOW)
+├── 01_Architecture/   → ADRs e diagramas
+├── 02_Specs/          → Feature specs e guias
+│   └── Migrations/    → Docs (.md) das migrations
+├── 03_Sprint_Logs/    → Diários de sprint
+└── 04_Assets/         → Imagens e diagramas exportados
+```
+
+A criação é idempotente: se `docs/` já existir, os arquivos existentes são preservados (só os faltantes são adicionados).
+
+O `00_Meta/` já vem com os templates prontos. Use os commands **`/spec`** e **`/adr`** para criar `SPEC-NNN` e `ADR-NNN` numerados (numeração automática) a partir deles, e o validador `spec_drift.py` para checar a coerência entre specs, migrations e código.
 
 ---
 
@@ -116,7 +141,6 @@ npx nexus-code-starter-kit --help       # ajuda completa
 
 - [Node.js](https://nodejs.org) 18+
 - [Claude Code](https://claude.ai/download)
-- [Obsidian](https://obsidian.md) *(opcional, para documentação)*
 
 ---
 

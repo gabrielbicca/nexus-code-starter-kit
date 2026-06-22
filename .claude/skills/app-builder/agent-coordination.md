@@ -15,13 +15,13 @@
 │  • Task breakdown                                            │
 │  • Dependency graph                                          │
 │  • File structure planning                                   │
-│  • Create {task-slug}.md in project root (MANDATORY)             │
+│  • Ensure SPEC + create docs/02_Specs/PLAN-<slug>.md (MANDATORY) │
 └─────────────────────────────────────────────────────────────┘
                               │
                               ▼
 ┌─────────────────────────────────────────────────────────────┐
 │              CHECKPOINT: PLAN VERIFICATION                   │
-│  🔴 VERIFY: Does {task-slug}.md exist in project root?       │
+│  🔴 VERIFY: SPEC + docs/02_Specs/PLAN-<slug>.md exist?       │
 │  🔴 If NO → STOP → Create plan file first                    │
 │  🔴 If YES → Proceed to specialist agents                    │
 └─────────────────────────────────────────────────────────────┘
@@ -60,12 +60,12 @@
 | Phase | Agent(s) | Parallel? | Prerequisite | CHECKPOINT |
 |-------|----------|-----------|--------------|------------|
 | 0 | Socratic Gate | ❌ | - | ✅ Ask 3 questions |
-| 1 | Project Planner | ❌ | Questions answered | ✅ **PLAN.md created** |
-| 1.5 | **PLAN VERIFICATION** | ❌ | PLAN.md exists | ✅ **File exists in root** |
+| 1 | Project Planner | ❌ | Questions answered | ✅ **SPEC + PLAN in docs/02_Specs/** |
+| 1.5 | **SPEC + PLAN CHECK** | ❌ | SPEC + PLAN exist | ✅ **Files in docs/02_Specs/** |
 | 2 | Database Architect | ❌ | Plan ready | Schema defined |
 | 3 | Backend Specialist | ❌ | Schema ready | API routes created |
 | 4 | Frontend Specialist | ✅ | API ready (partial) | UI components ready |
 | 5 | Security Auditor, Test Engineer | ✅ | Code ready | Tests & audit pass |
 | 6 | DevOps Engineer | ❌ | All code ready | Deployment ready |
 
-> 🔴 **CRITICAL:** Phase 1.5 is MANDATORY. No specialist agents proceed without PLAN.md verification.
+> 🔴 **CRITICAL:** Phase 1.5 is MANDATORY. No specialist agents proceed without a SPEC + PLAN in docs/02_Specs/.

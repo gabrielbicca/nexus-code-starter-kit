@@ -177,9 +177,11 @@ if ($kit_version) {
 # ---------- CLAUDE.md ----------
 Write-Host ""
 $claude_md_path = Join-Path $destino "CLAUDE.md"
+$nome_projeto = Split-Path $destino -Leaf
 if (-not (Test-Path $claude_md_path)) {
     if (PerguntarSN "  Gerar CLAUDE.md para este projeto?") {
-        $nome    = Perguntar "  Nome do projeto" (Split-Path $destino -Leaf)
+        $nome    = Perguntar "  Nome do projeto" $nome_projeto
+        $nome_projeto = $nome
         $desc    = Perguntar "  Descrição em uma linha"
         $stack   = Perguntar "  Stack principal" "Next.js + Supabase"
         $data_hoje = (Get-Date).ToString("yyyy-MM-dd")
@@ -200,6 +202,19 @@ if (-not (Test-Path $claude_md_path)) {
 | Descrição | $desc |
 | Stack | $stack |
 | Criado em | $data_hoje |
+
+---
+
+## 🧠 Base de Conhecimento — Fonte de Verdade
+
+Este projeto é **spec-driven**: a documentação em ``docs/`` é o cérebro do desenvolvimento e a fonte de verdade. Consulte antes de decidir; atualize após implementar.
+
+- ``docs/README.md`` — Índice (mapa da documentação)
+- ``docs/00_Meta/`` — Templates e convenções
+- ``docs/01_Architecture/`` — ADRs e diagramas
+- ``docs/02_Specs/`` — Feature specs e guias (e ``Migrations/``)
+- ``docs/03_Sprint_Logs/`` — Diários de sprint
+- ``docs/04_Assets/`` — Imagens e diagramas exportados
 
 ---
 
@@ -233,6 +248,58 @@ Para bug fixes simples, pode pular.
         $claude_md | Out-File -FilePath $claude_md_path -Encoding UTF8
         Write-OK "CLAUDE.md gerado"
     }
+}
+
+# ---------- Base de conhecimento (docs/) — núcleo spec-driven, sempre criado ----------
+Write-Host ""
+$docs_path = Join-Path $destino "docs"
+$docs_ja_existe = Test-Path $docs_path
+$docs_subdirs = @("00_Meta", "01_Architecture", "02_Specs", "02_Specs\Migrations", "03_Sprint_Logs", "04_Assets")
+foreach ($sub in $docs_subdirs) {
+    $p = Join-Path $docs_path $sub
+    if (-not (Test-Path $p)) { New-Item -ItemType Directory -Path $p -Force | Out-Null }
+    # .gitkeep só nas pastas que podem nascer vazias (00_Meta recebe os templates)
+    if ($sub -ne "00_Meta") {
+        $keep = Join-Path $p ".gitkeep"
+        if (-not (Test-Path $keep)) { New-Item -ItemType File -Path $keep | Out-Null }
+    }
+}
+
+# Copiar os templates do kit para docs/00_Meta (idempotente — preserva existentes)
+$kit_root = Split-Path $origem_claude -Parent
+$templates_meta = Join-Path $kit_root "templates\00_Meta"
+if (Test-Path $templates_meta) {
+    $meta_dest = Join-Path $docs_path "00_Meta"
+    Get-ChildItem $templates_meta -File -Force | ForEach-Object {
+        $dest = Join-Path $meta_dest $_.Name
+        if (-not (Test-Path $dest)) { Copy-Item $_.FullName $dest }
+    }
+}
+
+$docs_readme = Join-Path $docs_path "README.md"
+if (-not (Test-Path $docs_readme)) {
+    $docs_index = @"
+# Base de Conhecimento — $nome_projeto
+
+> Índice central da documentação do projeto. Mantenha-o sempre atualizado.
+
+Esta pasta é a **fonte de verdade** do projeto (spec-driven): consulte antes de decidir, atualize após implementar.
+
+| Pasta | Conteúdo |
+|---|---|
+| 00_Meta/ | Templates, convenções, .env.local.example |
+| 01_Architecture/ | ADRs (decisões arquiteturais) e diagramas |
+| 02_Specs/ | Feature specs e guias |
+| 02_Specs/Migrations/ | Docs (.md) das migrations |
+| 03_Sprint_Logs/ | Diários de sprint |
+| 04_Assets/ | Imagens e diagramas exportados |
+"@
+    $docs_index | Out-File -FilePath $docs_readme -Encoding UTF8
+}
+if ($docs_ja_existe) {
+    Write-Info "docs/ já existe — estrutura garantida (arquivos existentes preservados)."
+} else {
+    Write-OK "docs/ criado (base de conhecimento — núcleo spec-driven do projeto)"
 }
 
 # ---------- Limpeza temporária ----------

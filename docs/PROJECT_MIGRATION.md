@@ -1,6 +1,6 @@
 # 🔄 PROJECT MIGRATION — Guia Temporário
 
-> Guia de referência para **migrar um projeto já existente** para o fluxo de trabalho padrão com Claude Code (vault + agentes + skills + CLAUDE.md).
+> Guia de referência para **migrar um projeto já existente** para o fluxo de trabalho padrão com Claude Code (docs/ + agentes + skills + CLAUDE.md).
 > Este arquivo é **temporário** — use como checklist durante a migração e arquive/remova quando o projeto estiver totalmente onboarded.
 >
 > **Quando usar este guia:** você já tem um projeto com código-fonte escrito (pode ser legacy, MVP, ou qualquer estágio) e quer passar a trabalhar nele dentro do fluxo padrão documentação-primeiro + agentes Claude Code.
@@ -15,7 +15,7 @@
 
 Pegar um projeto que **já tem código rodando** e:
 
-1. Introduzir a vault do Obsidian como cérebro externo (sem perder histórico)
+1. Introduzir a base de conhecimento em `docs/` como cérebro do desenvolvimento (sem perder histórico)
 2. Copiar os agentes/skills/commands padrão para `.claude/`
 3. Gerar o `CLAUDE.md` refletindo o estado **atual** do projeto (não o ideal)
 4. Fazer engenharia reversa de ADRs/SPECs/migrations a partir do código existente
@@ -31,7 +31,7 @@ A migração é dividida em **5 fases sequenciais**. Cada fase termina com um ma
 
 ```
 Fase 1 — Discovery       → Entender o que já existe
-Fase 2 — Scaffold        → Criar vault + .claude/ + CLAUDE.md inicial
+Fase 2 — Scaffold        → Criar docs/ + .claude/ + CLAUDE.md inicial
 Fase 3 — Reverse-Doc     → Documentar estado atual (ADRs + SPECs retroativas)
 Fase 4 — Validation      → Rodar checklist.py, testes, lint
 Fase 5 — Adoption        → Primeira feature nova no fluxo padrão
@@ -90,23 +90,23 @@ Exemplo de dívidas comuns:
 
 > Criação de arquivos novos. Nenhum arquivo existente é modificado.
 
-### 2.1 Criar vault do Obsidian
+### 2.1 Criar a base de conhecimento (`docs/`)
 
-- [ ] Criar pasta `<NOME_DA_VAULT>/` no diretório de vaults
-- [ ] Criar `README.md` (MOC) apontando para as seções abaixo
-- [ ] Criar subpastas:
+- [ ] Criar a pasta `docs/` na raiz do repo
+- [ ] Criar `docs/README.md` (índice) apontando para as seções abaixo
+- [ ] Criar subpastas em `docs/`:
   - `00_Meta/` — templates, AGENT_FLOW, .env.local.example
   - `01_Architecture/` — para os ADRs retroativos
   - `02_Specs/` — para as SPECs retroativas + guias
   - `02_Specs/Migrations/` — para docs das migrations existentes
   - `03_Sprint_Logs/` — em branco; começará a ser preenchida a partir da primeira sprint pós-migração
   - `04_Assets/` — imagens, diagramas
-- [ ] Copiar templates em `00_Meta/`:
+- [ ] Copiar templates em `docs/00_Meta/`:
   - `ADR-Template.md`
   - `Feature-Spec-Template.md`
   - `Migration-Template.md`
   - `AGENT_FLOW.md`
-- [ ] Criar `02_Specs/Project-Scope.md` descrevendo em 1-2 páginas o escopo atual do projeto (o que ele faz hoje, para quem, principais módulos)
+- [ ] Criar `docs/02_Specs/Project-Scope.md` descrevendo em 1-2 páginas o escopo atual do projeto (o que ele faz hoje, para quem, principais módulos)
 
 ### 2.2 Copiar ferramental Claude Code
 
@@ -131,7 +131,7 @@ Exemplo de dívidas comuns:
 
 ## 📋 Fase 3 — Reverse-Doc (documentar o estado atual)
 
-> Engenharia reversa: para cada coisa relevante que **já existe no código**, crie a doc correspondente no vault.
+> Engenharia reversa: para cada coisa relevante que **já existe no código**, crie a doc correspondente em `docs/`.
 
 ### 3.1 ADRs retroativos
 
@@ -157,13 +157,13 @@ Não é necessário criar SPEC para cada feature já existente — isso pode ser
 
 ### 3.3 Docs das migrations existentes
 
-- [ ] Para cada `.sql` em `supabase/migrations/` (ou equivalente), criar o `.md` correspondente em `02_Specs/Migrations/`
+- [ ] Para cada `.sql` em `supabase/migrations/` (ou equivalente), criar o `.md` correspondente em `docs/02_Specs/Migrations/`
 - [ ] Formato: `Migration-NNN-<nome-curto>.md` com descrição, o que foi alterado, dependências
 - [ ] Se a migration é antiga e ninguém lembra o contexto, documentar o que dá para inferir do SQL — "arqueologia OK"
 
-### 3.4 Atualizar o MOC do vault
+### 3.4 Atualizar o índice de `docs/`
 
-- [ ] Adicionar ao `README.md` (MOC) links para os ADRs, SPECs e Migrations recém-criados
+- [ ] Adicionar ao `docs/README.md` (índice) links para os ADRs, SPECs e Migrations recém-criados
 - [ ] Adicionar uma seção "Dívidas técnicas conhecidas" listando as divergências da Fase 1 com link para a SPEC de regularização
 
 ---
@@ -177,10 +177,10 @@ Não é necessário criar SPEC para cada feature já existente — isso pode ser
 - [ ] Rodar `npm test` — precisa passar (ou manter o mesmo estado anterior à migração)
 - [ ] Rodar `npm run test:integration` se existir — precisa passar
 - [ ] Rodar `.claude/scripts/checklist.py` na raiz do repo — revisar itens que falharem
-- [ ] Verificar que a vault abre no Obsidian sem links quebrados
+- [ ] Verificar que `docs/` abre em qualquer editor de markdown sem links quebrados
 - [ ] Verificar que o Claude Code lê o `CLAUDE.md` sem erros
-- [ ] Verificar que `git status` mostra apenas adições (vault + `.claude/` + `CLAUDE.md` + dívidas documentadas) — **nenhum arquivo de código existente deve ter sido modificado**
-- [ ] Fazer um commit único com mensagem: `chore: onboarding to Claude Code workflow (vault + agents + CLAUDE.md)`
+- [ ] Verificar que `git status` mostra apenas adições (`docs/` + `.claude/` + `CLAUDE.md` + dívidas documentadas) — **nenhum arquivo de código existente deve ter sido modificado**
+- [ ] Fazer um commit único com mensagem: `chore: onboarding to Claude Code workflow (docs + agents + CLAUDE.md)`
 
 ---
 
@@ -190,7 +190,7 @@ Não é necessário criar SPEC para cada feature já existente — isso pode ser
 
 - [ ] Escolher uma feature pequena e bem definida (NÃO começar pela maior dívida técnica)
 - [ ] Invocar `@orchestrator` — primeira feature com plano multi-domínio
-- [ ] Seguir o fluxo: SPEC → ADR (se aplicável) → Migration doc (se aplicável) → código → testes → atualizar vault → atualizar `CLAUDE.md`
+- [ ] Seguir o fluxo: SPEC → ADR (se aplicável) → Migration doc (se aplicável) → código → testes → atualizar `docs/` → atualizar `CLAUDE.md`
 - [ ] Commit seguindo o padrão `feat: descrição (SPEC-NNN)`
 - [ ] Revisar com o time o que funcionou e o que precisa ser ajustado no fluxo
 
@@ -218,7 +218,7 @@ Fase 1 — Discovery
   [ ] Lista de dívidas técnicas
 
 Fase 2 — Scaffold
-  [ ] Vault criado com estrutura padrão
+  [ ] docs/ criado com estrutura padrão
   [ ] .claude/ copiado
   [ ] CLAUDE.md preenchido com estado ATUAL
 
@@ -245,9 +245,9 @@ Fase 5 — Adoption
 
 Este `PROJECT_MIGRATION.md` é **temporário**. Remova quando:
 
-1. O vault está criado e atualizado regularmente
+1. A base de conhecimento (`docs/`) está criada e atualizada regularmente
 2. O `CLAUDE.md` reflete o estado atual do projeto
 3. Pelo menos 1 feature nova passou pelo fluxo padrão (Fase 5 concluída)
 4. O time sabe usar `@orchestrator`, SPECs e o protocolo de documentação-primeiro
 
-A partir daí, o `CLAUDE.md` + o MOC do vault já carregam todo o contexto — este guia vira redundante.
+A partir daí, o `CLAUDE.md` + o índice de `docs/` já carregam todo o contexto — este guia vira redundante.

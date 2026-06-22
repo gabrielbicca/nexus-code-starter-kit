@@ -6,6 +6,26 @@ Formato baseado em [Keep a Changelog](https://keepachangelog.com/pt-BR/1.0.0/).
 
 ---
 
+## [1.6.0] — 2026-06-22
+
+### Alterado
+- **Documentação desacoplada do Obsidian** — o kit deixa de referenciar o Obsidian e adota um padrão genérico de documentação **spec-driven** dentro do próprio repositório, em `docs/`. A base de conhecimento (specs, ADRs, sprint logs) é versionada junto com o código e abre em qualquer editor de markdown. Conclui o desacoplamento iniciado em 1.3.0.
+- `bin/cli.js` — removidas as perguntas "Usar Obsidian como cérebro externo?" e o caminho da vault. O `CLAUDE.md` gerado agora **sempre** inclui o bloco **Base de Conhecimento** apontando para `docs/`. `--help` atualizado.
+- `install.ps1` — paridade com o CLI Node: o `CLAUDE.md` gerado inclui o bloco de base de conhecimento e o instalador cria `docs/`.
+- `docs/CLAUDE.template.md`, `docs/NEW_PROJECT_BOOTSTRAP.md`, `docs/PROJECT_MIGRATION.md` — "vault do Obsidian / cérebro externo" substituído por "base de conhecimento em `docs/`"; a estrutura de pastas, antes uma vault externa, passa a viver dentro do repo; ênfase no fluxo spec-driven.
+- `README.md` — Obsidian removido dos pré-requisitos; nova seção "Base de conhecimento (`docs/`)"; `docs/` e `CLAUDE.md` listados em "O que é instalado".
+- **Agentes spec-aware (enforcement)** — `orchestrator` e `project-planner` agora **leem** as SPECs/ADRs existentes e **exigem uma SPEC** em `docs/02_Specs/` antes de implementar (o gate deixa de ser o `PLAN.md` efêmero). O plano do `project-planner` passa a viver em `docs/02_Specs/PLAN-<slug>.md` ligado à SPEC, em vez da raiz do projeto — resolvendo a contradição interna do próprio agente. Commands `/orchestrate` e `/plan` e a skill `plan-writing` alinhados. Caminho de ADR unificado para `docs/01_Architecture/ADR-NNN` (a skill `architecture` usava `docs/architecture/adr-00X`).
+
+### Adicionado
+- **Estrutura `docs/` criada na instalação** — `bin/cli.js` e `install.ps1` criam, de forma **não-opcional** e idempotente, o esqueleto da base de conhecimento (`00_Meta/`, `01_Architecture/`, `02_Specs/Migrations/`, `03_Sprint_Logs/`, `04_Assets/` + `README.md` índice). Como a documentação é o núcleo do framework spec-driven, deixa de ser um passo opcional. Arquivos existentes são sempre preservados.
+- **Templates de documentação** em `templates/00_Meta/` (`Feature-Spec-Template.md`, `ADR-Template.md`, `Migration-Template.md`, `AGENT_FLOW.md`, `.env.local.example`), copiados para `docs/00_Meta/` na instalação. Fecha o gap dos "templates-fantasma" — o protocolo referenciava templates que não existiam no kit.
+- **Commands `/spec` e `/adr`** — criam `SPEC-NNN` / `ADR-NNN` com **numeração automática** a partir dos templates, em `docs/02_Specs/` e `docs/01_Architecture/`, e atualizam o índice. README passa a anunciar 13 commands.
+- **Validador spec-driven** (`.claude/scripts/spec_drift.py`, plugado no `checklist.py` como check P6) — valida migration↔doc, referências a SPEC/ADR existentes e índice atualizado; tolerante a stacks variados (não falha em projeto sem `docs/`).
+- **Drift guard estendido** (`scripts/check-drift.js`) — o CI do kit passa a falhar se os templates de `templates/00_Meta/` sumirem. `templates/` adicionado ao campo `files` do `package.json`.
+- **Contexto Expandido / `.claude/context/`** — padrão "CLAUDE.md leve + contexto importável sob demanda": stubs genéricos em `.claude/context/` (`migrations`, `specs-adrs-pages`, `business-rules`, `github-project`, `ui-patterns`, `agents-skills`), instalados via `.claude/`, e nova seção "📥 Contexto Expandido — Arquivos Importáveis" no `CLAUDE.template.md` com os `@imports`. Complementam (não duplicam) a base de conhecimento em `docs/`.
+
+---
+
 ## [1.5.0] — 2026-05-13
 
 ### Adicionado

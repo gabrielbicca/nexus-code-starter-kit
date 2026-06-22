@@ -130,7 +130,31 @@ if (missingFromReadme.length) {
   ok(`README.md menciona todos os ${allAgentFiles.length} agentes`);
 }
 
-// ---------- 5. Resultado ----------
+// ---------- 5. Templates de docs (spec-driven) ----------
+// Os protocolos (CLAUDE.template.md, bootstrap, migration) mandam usar estes
+// templates em docs/00_Meta/. O instalador os copia de templates/00_Meta/.
+// Se sumirem, vira "template-fantasma": protocolo referencia o que não existe.
+const TEMPLATES_META = path.join(ROOT, "templates", "00_Meta");
+const EXPECTED_TEMPLATES = [
+  "ADR-Template.md",
+  "Feature-Spec-Template.md",
+  "Migration-Template.md",
+  "AGENT_FLOW.md",
+  ".env.local.example",
+];
+if (!fs.existsSync(TEMPLATES_META)) {
+  fail("templates/00_Meta/ não existe — o protocolo referencia templates que não seriam instalados");
+} else {
+  const present = new Set(fs.readdirSync(TEMPLATES_META));
+  const missingTpl = EXPECTED_TEMPLATES.filter((t) => !present.has(t));
+  if (missingTpl.length) {
+    fail(`templates ausentes em templates/00_Meta/: ${missingTpl.join(", ")}`);
+  } else {
+    ok(`templates/00_Meta/ tem os ${EXPECTED_TEMPLATES.length} templates esperados`);
+  }
+}
+
+// ---------- 6. Resultado ----------
 console.log();
 if (errors > 0) {
   console.error(red(`✗ Drift detectado: ${errors} problema(s).`));

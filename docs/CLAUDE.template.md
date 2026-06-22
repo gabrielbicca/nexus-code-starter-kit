@@ -7,17 +7,32 @@
 
 ---
 
-## 🧠 Cérebro Externo — Fonte de Verdade
+## 🧠 Base de Conhecimento — Fonte de Verdade
 
-Esta documentação é o **cérebro externo** da aplicação: a fonte de verdade e o contexto que sustenta cada decisão técnica do projeto. Trate-a como um **cérebro vivo** — ela precisa estar sempre atualizada, nunca desatualizada. Toda alteração em schema, RLS, regras de negócio, arquitetura ou infraestrutura **deve** ser refletida aqui imediatamente.
+Este projeto é **spec-driven**: a documentação é o **cérebro do desenvolvimento** — nenhuma implementação começa sem a spec correspondente existir antes. Esta base de conhecimento é a fonte de verdade e o contexto que sustenta cada decisão técnica do projeto. Trate-a como um **documento vivo** — ela precisa estar sempre atualizada, nunca desatualizada. Toda alteração em schema, RLS, regras de negócio, arquitetura ou infraestrutura **deve** ser refletida aqui imediatamente.
 
-A vault do Obsidian é o ponto central de conexão.
+A base de conhecimento vive em `docs/`, versionada junto com o código.
 
 | Item | Valor |
 |---|---|
-| Vault local | `<CAMINHO_ABSOLUTO_DA_VAULT>` |
+| Pasta | `docs/` |
 
-> Antes de tomar qualquer decisão técnica, consulte a vault. Antes de concluir qualquer implementação, atualize a vault.
+> Antes de tomar qualquer decisão técnica, consulte `docs/`. Antes de concluir qualquer implementação, atualize `docs/`.
+
+---
+
+## 📥 Contexto Expandido — Arquivos Importáveis
+
+Para manter este `CLAUDE.md` leve, o conteúdo volumoso é extraído para `.claude/context/` e carregado **sob demanda** via import `@`. Leia o arquivo correspondente apenas quando trabalhar no tópico:
+
+- `@.claude/context/migrations.md` — Tabela-resumo das migrations + padrão de cabeçalho
+- `@.claude/context/specs-adrs-pages.md` — Índice de SPECs, ADRs, tabelas, páginas, edge functions, deploy
+- `@.claude/context/business-rules.md` — Regras de negócio detalhadas do projeto
+- `@.claude/context/github-project.md` — Gotchas do GitHub Project, Issue Forms, campos, fluxo de cards
+- `@.claude/context/ui-patterns.md` — Paginação, Toast, Combobox, DatePicker, ConfirmDialog, Loading, Features
+- `@.claude/context/agents-skills.md` — Agentes, slash commands, skills, validation scripts
+
+> Estes arquivos **complementam** a base de conhecimento detalhada em `docs/` — são resumos/índices de acesso rápido, não substituem as SPECs/ADRs/migrations. Ao concluir uma feature, atualize o(s) arquivo(s) de contexto afetado(s): também são documento vivo.
 
 ---
 
@@ -72,8 +87,8 @@ O orchestrator vai:
 
 OBRIGATÓRIO — sem exceções. A documentação vem PRIMEIRO, o código vem DEPOIS.
 
-1. **Ler a documentação relevante no vault** (porta configurada acima) para o que será trabalhado
-2. **Criar a documentação no Obsidian ANTES de implementar:**
+1. **Ler a documentação relevante em `docs/`** para o que será trabalhado
+2. **Criar a documentação em `docs/` ANTES de implementar:**
    - Criar/atualizar a **SPEC** correspondente em `02_Specs/`
    - Criar/atualizar o **ADR** se houver decisão arquitetural em `01_Architecture/`
    - Criar o **doc da migration** em `02_Specs/Migrations/` se houver migration
@@ -81,7 +96,7 @@ OBRIGATÓRIO — sem exceções. A documentação vem PRIMEIRO, o código vem DE
 4. **Ler os arquivos relacionados** no código para entender o estado atual
 5. Só então propor ou implementar qualquer mudança
 
-> **A documentação é pré-requisito, não pós-requisito.** Nunca implemente sem antes ter documentado o que será feito no vault. Isso garante rastreabilidade, alinhamento e evita decisões no escuro.
+> **A documentação é pré-requisito, não pós-requisito.** Nunca implemente sem antes ter documentado o que será feito em `docs/`. Isso garante rastreabilidade, alinhamento e evita decisões no escuro.
 
 **Nunca assuma como algo funciona.** Leia primeiro. A documentação existe para evitar que decisões sejam tomadas no escuro — use-a sempre.
 
@@ -89,22 +104,22 @@ OBRIGATÓRIO — sem exceções. A documentação vem PRIMEIRO, o código vem DE
 
 ### 2. DEPOIS de qualquer alteração ou nova feature
 
-1. **Atualizar a documentação** na vault — marcar checkboxes, atualizar status das specs
-2. **Atualizar o README.md** (MOC) se a mudança afetou estrutura ou status
+1. **Atualizar a documentação** em `docs/` — marcar checkboxes, atualizar status das specs
+2. **Atualizar o `docs/README.md`** (índice) se a mudança afetou estrutura ou status
 3. **Atualizar este CLAUDE.md** se a mudança alterou regras, convenções ou arquitetura
 
-> Código sem documentação atualizada é código incompleto. A implementação só está concluída quando a vault reflete o estado atual.
+> Código sem documentação atualizada é código incompleto. A implementação só está concluída quando `docs/` reflete o estado atual.
 
 ### 3. Ordem obrigatória para toda feature nova
 
 ```
 0. Invocar @orchestrator (regra 0 acima) → gera plano multi-domínio
-1. Documentação (Obsidian)                → SPEC + ADR + Migration doc
+1. Documentação (docs/)                   → SPEC + ADR + Migration doc
 2. Migration SQL                          → aplicar no banco
 3. Types + Schema + Service               → código backend
 4. Testes de integração                   → validar RLS e lógica
 5. Frontend                               → página + componentes + actions + i18n
-6. Atualizar vault                        → checkboxes, status, MOC
+6. Atualizar docs/                        → checkboxes, status, índice
 7. Atualizar CLAUDE.md                    → regras, tabelas, migrations
 ```
 
@@ -131,7 +146,7 @@ OBRIGATÓRIO — sem exceções. A documentação vem PRIMEIRO, o código vem DE
 | Auth | `<PROVEDOR_DE_AUTH>` |
 | Infra | `<HOSPEDAGEM_E_ORQUESTRAÇÃO>` |
 | Agente | Claude Code (subagentes em `.claude/agents/`) |
-| Docs | Obsidian vault em `<CAMINHO_DA_VAULT>` |
+| Docs | Base de conhecimento em `docs/` (no repo) |
 
 ---
 
@@ -144,7 +159,7 @@ OBRIGATÓRIO — sem exceções. A documentação vem PRIMEIRO, o código vem DE
 - **RLS habilitado** em todas as tabelas: `ALTER TABLE x ENABLE ROW LEVEL SECURITY`
 - **Migrations numeradas sequencialmente**: `001_`, `002_`, ... (próxima disponível: `<NNN>_`)
 - **Caminho das migrations**: `supabase/migrations/` (ou equivalente do projeto)
-- **Referência .md de cada migration**: `02_Specs/Migrations/Migration-NNN-*.md`
+- **Referência .md de cada migration**: `docs/02_Specs/Migrations/Migration-NNN-*.md`
 - **Nunca usar** `SERIAL` ou `INTEGER` como PK — somente `UUID`
 - **Nunca concatenar** SQL dinamicamente — sempre parametrizar queries
 
@@ -248,6 +263,8 @@ Os slash commands vivem em `.claude/commands/<nome>.md` (formato Claude Code nat
 
 | Comando | Quando usar |
 |---|---|
+| `/spec` | Criar a SPEC de uma feature nova (spec-driven — documentar antes de codar) |
+| `/adr` | Registrar uma decisão arquitetural (ADR-NNN) |
 | `/orchestrate` | Feature complexa multi-domínio (padrão para projetos full-stack) |
 | `/create` | Feature simples, 1 domínio |
 | `/plan` | Requisitos vagos, incerteza técnica |
@@ -280,12 +297,12 @@ PYTHONIOENCODING=utf-8 python .claude/scripts/checklist.py .
 
 ---
 
-## 📁 Documentação (Obsidian Vault)
+## 📁 Documentação (`docs/`)
 
-O vault segue esta estrutura padrão:
+A base de conhecimento segue esta estrutura padrão dentro de `docs/`:
 
 ```
-README.md              → MOC (mapa de conteúdo) — atualizar sempre
+README.md              → Índice (mapa de conteúdo) — atualizar sempre
 00_Meta/               → Templates, .env.local.example
 00_Meta/AGENT_FLOW.md  → Referência rápida dos agentes/workflows do projeto
 01_Architecture/       → ADRs (decisões arquiteturais)
@@ -327,7 +344,7 @@ README.md              → MOC (mapa de conteúdo) — atualizar sempre
 
 ## 🚀 Deploy e Versionamento
 
-Documentação completa em `02_Specs/Deploy-Guide.md` na vault.
+Documentação completa em `docs/02_Specs/Deploy-Guide.md`.
 
 | Item | Valor |
 |---|---|
@@ -371,14 +388,14 @@ Documentação completa em `02_Specs/Deploy-Guide.md` na vault.
 
 - [ ] Ler a Spec correspondente em `02_Specs/`
 - [ ] Verificar o ADR relacionado em `01_Architecture/`
-- [ ] **Criar documentação no Obsidian ANTES de implementar** (SPEC + ADR + Migration doc)
+- [ ] **Criar documentação em `docs/` ANTES de implementar** (SPEC + ADR + Migration doc)
 - [ ] Confirmar número da próxima migration
 - [ ] Incluir referências a `@security-auditor`, `@test-engineer` e `@qa-automation-engineer`
 - [ ] Nomear tabelas/colunas em inglês
 - [ ] Habilitar RLS na tabela nova
 - [ ] Testar isolamento multi-tenant após implementar (se aplicável)
 - [ ] Verificar que `super_admin` não é bloqueado por RLS
-- [ ] Atualizar vault (README.md + Spec correspondente) ao concluir
+- [ ] Atualizar `docs/` (`docs/README.md` + Spec correspondente) ao concluir
 - [ ] Cadastrar features na tabela `features` (code_read, code_write, code_delete) — se o projeto usa sistema de permissões
 - [ ] Implementar paginação server-side em toda listagem (`.range()` + `count: 'exact'`)
 
@@ -456,7 +473,7 @@ Toda página do dashboard **deve** ter feedback visual durante carregamento.
 - **Nunca** usar `SERIAL`/`INTEGER` como PK — só `UUID`
 - **Nunca** concatenar SQL dinamicamente (SQL injection)
 - **Nunca** commitar `.env.local` ou chaves secretas
-- **Nunca** implementar sem documentar antes no vault
+- **Nunca** implementar sem documentar antes em `docs/`
 - **Nunca** referenciar agentes sem o prefixo `@` (ex: usar `@database-architect`, não apenas `database-architect`)
 - **Nunca** criar listagem sem paginação server-side (usar `.range()` do Supabase ou equivalente)
 - **Nunca** implementar nova funcionalidade sem cadastrar as features correspondentes na tabela `features` (se o projeto usa sistema de permissões)

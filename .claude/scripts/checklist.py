@@ -17,7 +17,8 @@ Priority Order:
     P3: Test Runner (unit/integration tests)
     P4: UX Audit (psychology laws, accessibility)
     P5: SEO Check (meta tags, structure)
-    P6: Performance (lighthouse - requires URL)
+    P6: Spec-Drift (specs/ADRs/migrations coerentes com docs/)
+    P7: Performance (lighthouse - requires URL)
 """
 
 import sys
@@ -62,6 +63,7 @@ CORE_CHECKS = [
     ("Test Runner", ".claude/skills/testing-patterns/scripts/test_runner.py", False),
     ("UX Audit", ".claude/skills/frontend-design/scripts/ux_audit.py", False),
     ("SEO Check", ".claude/skills/seo-fundamentals/scripts/seo_checker.py", False),
+    ("Spec-Drift", ".claude/scripts/spec_drift.py", False),
 ]
 
 PERFORMANCE_CHECKS = [

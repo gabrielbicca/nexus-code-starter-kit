@@ -53,7 +53,7 @@ $ARGUMENTS
 
 | Step | Agent | Action |
 |------|-------|--------|
-| 1 | `project-planner` | Create docs/PLAN.md |
+| 1 | `project-planner` | Ensure the SPEC (`/spec`) + create `docs/02_Specs/PLAN-<slug>.md` linked to it |
 | 2 | (optional) `explorer-agent` | Codebase discovery if needed |
 
 > 🔴 **NO OTHER AGENTS during planning!** Only project-planner and explorer-agent.
@@ -61,9 +61,9 @@ $ARGUMENTS
 ### ⏸️ CHECKPOINT: User Approval
 
 ```
-After PLAN.md is complete, ASK:
+After the SPEC + PLAN are complete, ASK:
 
-"✅ Plan created: docs/PLAN.md
+"✅ SPEC + plan created in docs/02_Specs/
 
 Do you approve? (Y/N)
 - Y: Start implementation
@@ -86,7 +86,7 @@ Do you approve? (Y/N)
 
 | Agent | Domain | Use When |
 |-------|--------|----------|
-| `project-planner` | Planning | Task breakdown, PLAN.md |
+| `project-planner` | Planning | SPEC + PLAN in docs/02_Specs/ |
 | `explorer-agent` | Discovery | Codebase mapping |
 | `frontend-specialist` | UI/UX | React, Vue, CSS, HTML |
 | `backend-specialist` | Server | API, Node.js, Python |
@@ -124,17 +124,17 @@ Identify ALL domains this task touches:
 
 ### Step 2: Phase Detection
 
-| If Plan Exists | Action |
+| State | Action |
 |----------------|--------|
-| NO `docs/PLAN.md` | → Go to PHASE 1 (planning only) |
-| YES `docs/PLAN.md` + user approved | → Go to PHASE 2 (implementation) |
+| No SPEC in `docs/02_Specs/` | → PHASE 1 (create SPEC + plan) |
+| SPEC (+ plan) exists and user approved | → PHASE 2 (implementation) |
 
 ### Step 3: Execute Based on Phase
 
 **PHASE 1 (Planning):**
 ```
-Use the project-planner agent to create PLAN.md
-→ STOP after plan is created
+Use the project-planner agent to ensure the SPEC (/spec) and create docs/02_Specs/PLAN-<slug>.md
+→ STOP after the SPEC + plan are created
 → ASK user for approval
 ```
 
@@ -157,7 +157,7 @@ When invoking ANY subagent, you MUST include:
 
 **Example with FULL context:**
 ```
-Use the project-planner agent to create PLAN.md:
+Use the project-planner agent to ensure the SPEC and create docs/02_Specs/PLAN-<slug>.md:
 
 **CONTEXT:**
 - User Request: "A social platform for students, using mock data"
@@ -165,7 +165,7 @@ Use the project-planner agent to create PLAN.md:
 - Previous Work: Orchestrator asked 6 questions, user chose all options
 - Current Plan: playful-roaming-dream.md exists in workspace with initial structure
 
-**TASK:** Create detailed PLAN.md based on ABOVE decisions. Do NOT infer from folder name.
+**TASK:** Ensure the SPEC and create the detailed docs/02_Specs/PLAN-<slug>.md based on ABOVE decisions. Do NOT infer from folder name.
 ```
 
 > ⚠️ **VIOLATION:** Invoking subagent without full context = subagent will make wrong assumptions!
@@ -211,7 +211,7 @@ Combine all agent outputs into unified report.
 3. **[Agent 3]**: Finding
 
 ### Deliverables
-- [ ] PLAN.md created
+- [ ] SPEC + PLAN created in docs/02_Specs/
 - [ ] Code implemented
 - [ ] Tests passing
 - [ ] Scripts verified

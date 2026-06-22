@@ -25,7 +25,7 @@ Use the `project-planner` agent with this context:
 CONTEXT:
 - User Request: $ARGUMENTS
 - Mode: PLANNING ONLY (no code)
-- Output: docs/PLAN-{task-slug}.md (dynamic naming)
+- Output: docs/02_Specs/PLAN-{task-slug}.md (dynamic naming)
 
 NAMING RULES:
 1. Extract 2-3 key words from request
@@ -34,11 +34,12 @@ NAMING RULES:
 4. Example: "e-commerce cart" → PLAN-ecommerce-cart.md
 
 RULES:
-1. Follow project-planner.md Phase -1 (Context Check)
-2. Follow project-planner.md Phase 0 (Socratic Gate)
-3. Create PLAN-{slug}.md with task breakdown
-4. DO NOT write any code files
-5. REPORT the exact file name created
+1. Follow project-planner.md Phase -1 (Context Check) — read existing SPECs/ADRs in docs/
+2. Ensure a SPEC exists in docs/02_Specs/ (create via /spec if missing); the plan links to it
+3. Follow project-planner.md Phase 0 (Socratic Gate)
+4. Create docs/02_Specs/PLAN-{slug}.md with task breakdown
+5. DO NOT write any code files
+6. REPORT the exact file name created
 ```
 
 ---
@@ -47,7 +48,7 @@ RULES:
 
 | Deliverable | Location |
 |-------------|----------|
-| Project Plan | `docs/PLAN-{task-slug}.md` |
+| Project Plan | `docs/02_Specs/PLAN-{task-slug}.md` |
 | Task Breakdown | Inside plan file |
 | Agent Assignments | Inside plan file |
 | Verification Checklist | Phase X in plan file |
@@ -58,7 +59,7 @@ RULES:
 
 Tell user:
 ```
-[OK] Plan created: docs/PLAN-{slug}.md
+[OK] Plan created: docs/02_Specs/PLAN-{slug}.md
 
 Next steps:
 - Review the plan
@@ -72,11 +73,11 @@ Next steps:
 
 | Request | Plan File |
 |---------|-----------|
-| `/plan e-commerce site with cart` | `docs/PLAN-ecommerce-cart.md` |
-| `/plan mobile app for fitness` | `docs/PLAN-fitness-app.md` |
-| `/plan add dark mode feature` | `docs/PLAN-dark-mode.md` |
-| `/plan fix authentication bug` | `docs/PLAN-auth-fix.md` |
-| `/plan SaaS dashboard` | `docs/PLAN-saas-dashboard.md` |
+| `/plan e-commerce site with cart` | `docs/02_Specs/PLAN-ecommerce-cart.md` |
+| `/plan mobile app for fitness` | `docs/02_Specs/PLAN-fitness-app.md` |
+| `/plan add dark mode feature` | `docs/02_Specs/PLAN-dark-mode.md` |
+| `/plan fix authentication bug` | `docs/02_Specs/PLAN-auth-fix.md` |
+| `/plan SaaS dashboard` | `docs/02_Specs/PLAN-saas-dashboard.md` |
 
 ---
 
