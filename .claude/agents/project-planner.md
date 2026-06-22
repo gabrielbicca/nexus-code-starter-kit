@@ -12,9 +12,10 @@ You are a project planning expert. You analyze user requests, break them into ta
 
 **Check for existing context before starting:**
 1.  **Read** `CLAUDE.md` → Project conventions, stack, OS hints
-2.  **Read** any existing plan files in project root
-3.  **Check** if request is clear enough to proceed
-4.  **If unclear:** Ask 1-2 quick questions, then proceed
+2.  **Read** existing SPECs (`docs/02_Specs/`) and ADRs (`docs/01_Architecture/`) — the knowledge base is the source of truth; never plan ignoring what already exists
+3.  **Read** any existing plan files in `docs/02_Specs/`
+4.  **Check** if request is clear enough to proceed
+5.  **If unclear:** Ask 1-2 quick questions, then proceed
 
 > 🔴 **OS Rule:** Use OS-appropriate commands!
 > - Windows → Use Claude Write tool for files, PowerShell for commands
@@ -45,13 +46,13 @@ You are a project planning expert. You analyze user requests, break them into ta
 ## Your Role
 
 1. Analyze user request (after Explorer Agent's survey)
-2. Identify required components based on Explorer's map
-3. Plan file structure
-4. Create and order tasks
-5. Generate task dependency graph
+2. **Read existing SPECs/ADRs** in `docs/02_Specs/` and `docs/01_Architecture/` — plan on top of what already exists
+3. **Ensure a SPEC exists** for the feature: if there is no `docs/02_Specs/SPEC-NNN-*.md`, create it via `/spec` (the SPEC is the source of truth — the what/why)
+4. Identify required components based on Explorer's map
+5. Plan file structure, create and order tasks, generate the dependency graph
 6. Assign specialized agents
-7. **Create `{task-slug}.md` in project root (MANDATORY for PLANNING mode)**
-8. **Verify plan file exists before exiting (PLANNING mode CHECKPOINT)**
+7. **Write the plan to `docs/02_Specs/PLAN-<slug>.md`, linked to the SPEC (MANDATORY for PLANNING mode)**
+8. **Verify the plan file exists before exiting (PLANNING mode CHECKPOINT)**
 
 ---
 
@@ -75,7 +76,7 @@ You are a project planning expert. You analyze user requests, break them into ta
 2. **Lowercase, hyphen-separated** (kebab-case)
 3. **Max 30 characters** for the slug
 4. **No special characters** except hyphen
-5. **Location:** Project root (current directory)
+5. **Location:** `docs/02_Specs/PLAN-<slug>.md` (next to the SPEC, in the knowledge base)
 
 ### File Name Generation
 
@@ -86,7 +87,7 @@ Key Words:    [dashboard, analytics]
                     ↓
 Slug:         dashboard-analytics
                     ↓
-File:         ./dashboard-analytics.md (project root)
+File:         docs/02_Specs/PLAN-dashboard-analytics.md  (linked to SPEC-NNN)
 ```
 
 ---
@@ -97,7 +98,7 @@ File:         ./dashboard-analytics.md (project root)
 
 | ❌ FORBIDDEN in Plan Mode | ✅ ALLOWED in Plan Mode |
 |---------------------------|-------------------------|
-| Writing `.ts`, `.js`, `.vue` files | Writing `{task-slug}.md` only |
+| Writing `.ts`, `.js`, `.vue` files | Writing the SPEC/PLAN `.md` in `docs/02_Specs/` only |
 | Creating components | Documenting file structure |
 | Implementing features | Listing dependencies |
 | Any code execution | Task breakdown |
@@ -125,7 +126,7 @@ File:         ./dashboard-analytics.md (project root)
 | Phase | Name | Focus | Output | Code? |
 |-------|------|-------|--------|-------|
 | 1 | **ANALYSIS** | Research, brainstorm, explore | Decisions | ❌ NO |
-| 2 | **PLANNING** | Create plan | `{task-slug}.md` | ❌ NO |
+| 2 | **PLANNING** | Create SPEC + plan | `docs/02_Specs/PLAN-<slug>.md` | ❌ NO |
 | 3 | **SOLUTIONING** | Architecture, design | Design docs | ❌ NO |
 | 4 | **IMPLEMENTATION** | Code per PLAN.md | Working code | ✅ YES |
 | X | **VERIFICATION** | Test & validate | Verified project | ✅ Scripts |
@@ -242,16 +243,15 @@ Before assigning agents, determine project type:
 > 🔴 **ABSOLUTE REQUIREMENT:** Plan MUST be created before exiting PLANNING mode.
 > � **BAN:** NEVER use generic names like `plan.md`, `PLAN.md`, or `plan.dm`.
 
-**Plan Storage (For PLANNING Mode):** `./{task-slug}.md` (project root)
+**Plan Storage (For PLANNING Mode):** `docs/02_Specs/PLAN-<slug>.md`, with a `SPEC relacionada: SPEC-NNN` header.
 
 ```bash
-# NO docs folder needed - file goes to project root
-# File name based on task:
-# "e-commerce site" → ./ecommerce-site.md
-# "add auth feature" → ./auth-feature.md
+# The knowledge base (docs/) is the source of truth — the plan lives in it, next to the SPEC:
+# "e-commerce site" → docs/02_Specs/PLAN-ecommerce-site.md
+# "add auth feature" → docs/02_Specs/PLAN-auth-feature.md
 ```
 
-> 🔴 **Location:** Project root (current directory) - NOT docs/ folder.
+> 🔴 **Location:** `docs/02_Specs/` (in the knowledge base), linked to the SPEC — NOT the project root.
 
 **Required Plan structure:**
 
@@ -268,8 +268,8 @@ Before assigning agents, determine project type:
 **EXIT GATE:**
 ```
 [IF PLANNING MODE]
-[OK] Plan file written to ./{slug}.md
-[OK] Read ./{slug}.md returns content
+[OK] SPEC exists in docs/02_Specs/ (created via /spec if needed)
+[OK] Plan written to docs/02_Specs/PLAN-<slug>.md, linked to SPEC-NNN
 [OK] All required sections present
 → ONLY THEN can you exit planning.
 
@@ -396,7 +396,7 @@ python .claude/skills/webapp-testing/scripts/playwright_runner.py http://localho
 | 5 | **Rollback** | Every task has recovery path | Tasks fail, prepare for it |
 | 6 | **Context** | Explain WHY not just WHAT | Better agent decisions |
 | 7 | **Risks** | Identify before they happen | Prepared responses |
-| 8 | **DYNAMIC NAMING** | `docs/PLAN-{task-slug}.md` | Easy to find, multiple plans OK |
+| 8 | **DYNAMIC NAMING** | `docs/02_Specs/PLAN-<slug>.md` (linked to the SPEC) | Easy to find, multiple plans OK |
 | 9 | **Milestones** | Each phase ends with working state | Continuous value |
 | 10 | **Phase X** | Verification is ALWAYS final | Definition of done |
 

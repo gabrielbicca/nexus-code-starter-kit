@@ -11,8 +11,8 @@
 
 Garantir que **todo novo projeto** nasça com:
 
-1. A mesma estrutura de pastas (vault + repo)
-2. O mesmo fluxo documentação-primeiro (Obsidian como cérebro externo)
+1. A mesma estrutura de pastas (`docs/` versionado no repo)
+2. O mesmo fluxo documentação-primeiro (spec-driven — `docs/` é o cérebro do desenvolvimento)
 3. Os mesmos agentes/skills/commands do Claude Code
 4. As mesmas convenções de banco, RLS, migrations e commit
 5. O mesmo protocolo obrigatório (`@orchestrator` antes de qualquer feature)
@@ -21,23 +21,19 @@ Garantir que **todo novo projeto** nasça com:
 
 ## 📁 Estrutura Obrigatória
 
-### 1. Vault do Obsidian (`<NOME_DA_VAULT>/`)
+Tudo vive **dentro do repositório** — a base de conhecimento (`docs/`) é versionada junto com o código, como qualquer outro artefato spec-driven.
 
 ```
-📄 README.md              → MOC (Mapa de Conteúdo) — dashboard central do projeto
-📁 00_Meta/               → Templates, convenções, AGENT_FLOW.md, .env.local.example
-📁 01_Architecture/       → ADRs e diagramas
-📁 02_Specs/              → Feature specs (.md) + guias (Deploy-Guide, Project-Scope)
-   📁 Migrations/         → Docs .md das migrations (SEM .sql — fonte no repo)
-📁 03_Sprint_Logs/        → Diários de sprint e retrospectivas
-📁 04_Assets/             → Imagens, diagramas exportados
-```
-
-### 2. Repo Git (`<nome-do-projeto>/`)
-
-```
-📄 CLAUDE.md              → Contexto técnico (única fonte — não duplicar no vault)
+📄 CLAUDE.md              → Contexto técnico (fonte única — não duplicar)
 📄 README.md              → README público do GitHub
+📁 docs/                  → Base de conhecimento (spec-driven — o cérebro do dev)
+   📄 README.md           → Índice (mapa de conteúdo) — dashboard central
+   📁 00_Meta/            → Templates, convenções, AGENT_FLOW.md, .env.local.example
+   📁 01_Architecture/    → ADRs e diagramas
+   📁 02_Specs/           → Feature specs (.md) + guias (Deploy-Guide, Project-Scope)
+      📁 Migrations/      → Docs .md das migrations (SEM .sql — fonte no repo)
+   📁 03_Sprint_Logs/     → Diários de sprint e retrospectivas
+   📁 04_Assets/          → Imagens, diagramas exportados
 📁 supabase/migrations/   → Arquivos .sql oficiais (fonte de verdade) — ou equivalente do stack
 📁 supabase/functions/    → Edge Functions — ou equivalente
 📁 .claude/agents/        → Subagentes Claude Code invocáveis
@@ -58,7 +54,7 @@ Para **qualquer feature nova** (SPEC nova, nova tabela, nova rota/página, refat
 
 ### Regra 1 — Documentação PRIMEIRO, código DEPOIS
 
-1. Ler a doc relevante no vault
+1. Ler a doc relevante em `docs/`
 2. Criar/atualizar a **SPEC** em `02_Specs/`
 3. Criar/atualizar **ADR** se houver decisão arquitetural
 4. Criar doc da **migration** em `02_Specs/Migrations/` se houver migration
@@ -68,12 +64,12 @@ Para **qualquer feature nova** (SPEC nova, nova tabela, nova rota/página, refat
 
 ```
 0. Invocar @orchestrator
-1. Documentação (Obsidian)     → SPEC + ADR + Migration doc
+1. Documentação (docs/)        → SPEC + ADR + Migration doc
 2. Migration SQL               → aplicar no banco
 3. Types + Schema + Service    → código backend
 4. Testes de integração        → validar RLS e lógica
 5. Frontend                    → página + componentes + actions + i18n
-6. Atualizar vault             → checkboxes, status, MOC
+6. Atualizar docs/             → checkboxes, status, índice
 7. Atualizar CLAUDE.md         → regras, tabelas, migrations
 8. Commit + Push               → AUTOMÁTICO (padrão `feat: descrição (SPEC-NNN)`)
 ```
@@ -124,7 +120,7 @@ USING (
 | Auth | Supabase Auth (JWT padrão — sem custom hook) |
 | Infra | Supabase Self-Hosted em VPS + Coolify |
 | Agente | Claude Code (`.claude/agents/`) |
-| Docs | Obsidian vault (cérebro externo) |
+| Docs | Base de conhecimento em `docs/` (cérebro do dev) |
 | i18n | next-intl cookie-based (default `en`) |
 
 ---
@@ -144,9 +140,9 @@ Esses ativos são **biblioteca reutilizável** — não reinventar em cada proje
 
 ---
 
-## 📝 Templates Mínimos no Vault
+## 📝 Templates Mínimos em `docs/00_Meta/`
 
-Ao criar o vault de um novo projeto, garantir os templates em `00_Meta/`:
+Ao criar a base de conhecimento de um novo projeto, garantir os templates em `docs/00_Meta/`:
 
 - `ADR-Template.md` — para decisões arquiteturais
 - `Feature-Spec-Template.md` — para especificar features
@@ -158,13 +154,13 @@ Ao criar o vault de um novo projeto, garantir os templates em `00_Meta/`:
 
 ## ✅ Checklist de Bootstrap (projeto novo)
 
-### Vault Obsidian
+### Base de conhecimento (`docs/`)
 
-- [ ] Criar pasta `<NOME_DA_VAULT>/` no diretório de vaults
-- [ ] Criar `README.md` (MOC) copiando e adaptando do projeto-base
+- [ ] Criar a pasta `docs/` na raiz do repo
+- [ ] Criar `docs/README.md` (índice) copiando e adaptando do projeto-base
 - [ ] Criar subpastas: `00_Meta/`, `01_Architecture/`, `02_Specs/`, `02_Specs/Migrations/`, `03_Sprint_Logs/`, `04_Assets/`
-- [ ] Adicionar templates em `00_Meta/`
-- [ ] Criar `Project-Scope.md` em `02_Specs/` com escopo inicial
+- [ ] Adicionar templates em `docs/00_Meta/`
+- [ ] Criar `docs/02_Specs/Project-Scope.md` com escopo inicial
 
 ### Repo Git
 
@@ -194,7 +190,7 @@ Ao criar o vault de um novo projeto, garantir os templates em `00_Meta/`:
 - [ ] `npm run lint` passa
 - [ ] `npm test` passa (mesmo com 0 testes)
 - [ ] `checklist.py` 6/6 PASSED
-- [ ] Vault abre no Obsidian sem links quebrados
+- [ ] `docs/` abre em qualquer editor de markdown sem links quebrados
 - [ ] `CLAUDE.md` lido pelo Claude Code sem erros
 
 ---
@@ -205,7 +201,7 @@ Ao criar o vault de um novo projeto, garantir os templates em `00_Meta/`:
 - Nunca usar `SERIAL`/`INTEGER` como PK — só `UUID`
 - Nunca concatenar SQL dinamicamente
 - Nunca commitar `.env.local` ou chaves secretas
-- Nunca implementar sem documentar antes no vault
+- Nunca implementar sem documentar antes em `docs/`
 - Nunca criar listagem sem paginação server-side (`.range()` + `count: 'exact'`)
 - Nunca usar `confirm()` ou `<input type="date">` nativos — usar componentes do design system
 - Nunca pular o `@orchestrator` em feature nova
@@ -216,9 +212,9 @@ Ao criar o vault de um novo projeto, garantir os templates em `00_Meta/`:
 
 Este `NEW_PROJECT_BOOTSTRAP.md` é **temporário**. Remova quando:
 
-1. O projeto tem vault estruturado com MOC funcional
+1. O projeto tem `docs/` estruturado com índice funcional
 2. O projeto tem `CLAUDE.md` completo com suas próprias regras
 3. Pelo menos 1 SPEC foi implementada seguindo o fluxo completo
 4. O time está familiarizado com o protocolo
 
-A partir daí, o `CLAUDE.md` + o MOC do vault já carregam todo o contexto — este guia vira redundante.
+A partir daí, o `CLAUDE.md` + o índice de `docs/` já carregam todo o contexto — este guia vira redundante.

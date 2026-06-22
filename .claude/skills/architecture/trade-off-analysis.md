@@ -70,8 +70,8 @@ Proposed | Accepted | Deprecated | Superseded by [ADR-YYY]
 
 ```
 docs/
-└── architecture/
-    ├── adr-001-use-nextjs.md
-    ├── adr-002-postgresql-over-mongodb.md
-    └── adr-003-adopt-repository-pattern.md
+└── 01_Architecture/
+    ├── ADR-001-use-nextjs.md
+    ├── ADR-002-postgresql-over-mongodb.md
+    └── ADR-003-adopt-repository-pattern.md
 ```

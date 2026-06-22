@@ -58,7 +58,8 @@ Fluxo interativo:
        sobrescrever → atualiza TODOS os agentes/skills/commands
        cancelar
   3. Opcionalmente gera CLAUDE.md (não toca se já existir).
-  4. Grava .claude/.kit-version com a versão instalada.
+  4. Cria a base de conhecimento em docs/ (núcleo spec-driven; preserva arquivos existentes).
+  5. Grava .claude/.kit-version com a versão instalada.
 
 Repo: https://github.com/gabrielbicca/nexus-code-starter-kit
 `);
@@ -151,34 +152,107 @@ function writeKitVersion(destClaude) {
   fs.writeFileSync(path.join(destClaude, ".kit-version"), KIT_VERSION + "\n", "utf8");
 }
 
-// ---------- Obsidian block for generated CLAUDE.md ----------
-function blocoObsidian(vaultPath) {
+// ---------- Knowledge-base block for generated CLAUDE.md ----------
+function blocoBaseConhecimento() {
   return `
 ---
 
-## 🧠 Cérebro Externo — Obsidian
+## 🧠 Base de Conhecimento — Fonte de Verdade
 
-A vault do Obsidian é o ponto central de documentação do projeto.
-Consulte antes de tomar decisões técnicas. Atualize após qualquer implementação.
+A documentação em \`docs/\` é a **base de conhecimento** do projeto: a fonte de
+verdade que sustenta cada decisão técnica. Trate-a como um documento vivo —
+consulte antes de decidir e atualize após qualquer implementação.
 
-| Item | Valor |
-|---|---|
-| Vault local | \`${vaultPath}\` |
-
-### Estrutura da vault
+### Estrutura de \`docs/\`
 
 \`\`\`
-📄 README.md              → MOC central do projeto
+📄 README.md              → Índice central (mapa da documentação)
 📁 00_Meta/               → Templates e convenções
 📁 01_Architecture/       → ADRs e diagramas
 📁 02_Specs/              → Feature specs e guias
+📁 02_Specs/Migrations/   → Docs (.md) das migrations
 📁 03_Sprint_Logs/        → Diários de sprint
 📁 04_Assets/             → Imagens e diagramas exportados
 \`\`\`
 
-> **Regra:** Antes de qualquer decisão técnica → consulte a vault.
-> Antes de concluir qualquer implementação → atualize a vault.
+> **Regra:** Antes de qualquer decisão técnica → consulte \`docs/\`.
+> Antes de concluir qualquer implementação → atualize \`docs/\`.
 `;
+}
+
+// ---------- knowledge-base skeleton (docs/) ----------
+const DOCS_SUBDIRS = [
+  "00_Meta",
+  "01_Architecture",
+  "02_Specs",
+  path.join("02_Specs", "Migrations"),
+  "03_Sprint_Logs",
+  "04_Assets",
+];
+
+// Pasta-fonte dos templates do kit, copiada para docs/00_Meta do projeto.
+const TEMPLATES_META_DIR = path.join(KIT_DIR, "templates", "00_Meta");
+
+function docsReadmeIndex(nome) {
+  return `# Base de Conhecimento — ${nome}
+
+> Índice central (MOC) da documentação do projeto. Mantenha-o sempre atualizado.
+
+Esta pasta é a **fonte de verdade** do projeto: consulte antes de decidir,
+atualize após implementar.
+
+## Estrutura
+
+| Pasta | Conteúdo |
+|---|---|
+| \`00_Meta/\` | Templates, convenções, \`.env.local.example\` |
+| \`01_Architecture/\` | ADRs (decisões arquiteturais) e diagramas |
+| \`02_Specs/\` | Feature specs e guias |
+| \`02_Specs/Migrations/\` | Docs (.md) das migrations — SEM \`.sql\` (fonte no repo) |
+| \`03_Sprint_Logs/\` | Diários de sprint |
+| \`04_Assets/\` | Imagens e diagramas exportados |
+
+## Como criar artefatos
+
+- Nova feature → \`/spec <descrição>\` (usa \`00_Meta/Feature-Spec-Template.md\`)
+- Decisão arquitetural → \`/adr <decisão>\` (usa \`00_Meta/ADR-Template.md\`)
+- Migration → documente em \`02_Specs/Migrations/\` a partir do \`Migration-Template.md\`
+
+## Specs
+
+| Spec | Status | O que implementou |
+|---|---|---|
+| _(adicione aqui)_ | | |
+
+## ADRs
+
+| ADR | Decisão |
+|---|---|
+| _(adicione aqui)_ | |
+`;
+}
+
+function criarEsqueletoDocs(docsPath, nome) {
+  fs.mkdirSync(docsPath, { recursive: true });
+  for (const sub of DOCS_SUBDIRS) {
+    const p = path.join(docsPath, sub);
+    if (!fs.existsSync(p)) fs.mkdirSync(p, { recursive: true });
+  }
+
+  // 00_Meta recebe os templates reais do kit (idempotente — preserva existentes)
+  if (fs.existsSync(TEMPLATES_META_DIR)) {
+    copyDir(TEMPLATES_META_DIR, path.join(docsPath, "00_Meta"), false);
+  }
+
+  // .gitkeep só nas pastas que podem nascer vazias (00_Meta já tem os templates)
+  for (const sub of DOCS_SUBDIRS) {
+    if (sub === "00_Meta") continue;
+    const keep = path.join(docsPath, sub, ".gitkeep");
+    if (!fs.existsSync(keep)) fs.writeFileSync(keep, "", "utf8");
+  }
+
+  const readmePath = path.join(docsPath, "README.md");
+  if (!fs.existsSync(readmePath)) fs.writeFileSync(readmePath, docsReadmeIndex(nome), "utf8");
 }
 
 // ============================================================
@@ -279,22 +353,17 @@ async function main() {
   // ---------- CLAUDE.md ----------
   console.log();
   const claudeMdPath = path.join(destino, "CLAUDE.md");
+  let nomeProjeto = path.basename(destino);
 
   if (!fs.existsSync(claudeMdPath)) {
     const gerar = await askSN("  Gerar CLAUDE.md para este projeto?");
     if (gerar) {
-      const nome  = await ask("  Nome do projeto", path.basename(destino));
+      const nome  = await ask("  Nome do projeto", nomeProjeto);
+      nomeProjeto = nome;
       const desc  = await ask("  Descrição em uma linha");
       const stack = await ask("  Stack principal", "Next.js + Supabase");
       const porta = await ask("  Porta do servidor de desenvolvimento", "3000");
       const data  = new Date().toISOString().slice(0, 10);
-
-      console.log();
-      const usarObsidian = await askSN("  Usar Obsidian como cérebro externo do projeto?");
-      let vaultPath = "";
-      if (usarObsidian) {
-        vaultPath = await ask("  Caminho da vault do Obsidian (ex: C:\\Users\\voce\\Obsidian\\Projetos\\" + nome + ")");
-      }
 
       const md = `# CLAUDE.md — ${nome}
 
@@ -312,7 +381,7 @@ async function main() {
 | Stack | ${stack} |
 | Porta dev | ${porta} |
 | Criado em | ${data} |
-${usarObsidian ? blocoObsidian(vaultPath) : ""}
+${blocoBaseConhecimento()}
 ---
 
 ## ⚙️ Protocolo Obrigatório
@@ -347,6 +416,19 @@ Para bug fixes simples (typo, estilo, ajuste isolado), pode pular.
     }
   } else {
     info("CLAUDE.md já existe — preservado.");
+  }
+
+  // ---------- base de conhecimento (docs/) — núcleo spec-driven, sempre criado ----------
+  console.log();
+  const docsPath = path.join(destino, "docs");
+  const docsJaExiste = fs.existsSync(docsPath);
+
+  criarEsqueletoDocs(docsPath, nomeProjeto);
+  if (docsJaExiste) {
+    info("docs/ já existe — estrutura garantida (arquivos existentes preservados).");
+  } else {
+    ok("docs/ criado (base de conhecimento — núcleo spec-driven do projeto)");
+    info("00_Meta, 01_Architecture, 02_Specs/Migrations, 03_Sprint_Logs, 04_Assets");
   }
 
   // ---------- summary ----------
