@@ -24,8 +24,8 @@ irm https://raw.githubusercontent.com/gabrielbicca/nexus-code-starter-kit/main/i
 ```
 .claude/
 ├── agents/      → 21 agentes especializados (@orchestrator, @backend-specialist, ...)
-├── commands/    → 13 slash commands (/spec, /adr, /plan, /deploy, ...)
-├── skills/      → 38 cápsulas de conhecimento técnico
+├── commands/    → 14 slash commands (/spec, /adr, /dotnet-new, /plan, /deploy, ...)
+├── skills/      → 42 cápsulas de conhecimento técnico
 ├── scripts/     → Scripts de verificação e automação
 └── context/     → Blocos de contexto importáveis (@imports do CLAUDE.md)
 
