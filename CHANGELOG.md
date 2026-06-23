@@ -6,6 +6,18 @@ Formato baseado em [Keep a Changelog](https://keepachangelog.com/pt-BR/1.0.0/).
 
 ---
 
+## [1.7.0] — 2026-06-23
+
+### Adicionado
+- **Skills de backend .NET** — três cápsulas em `.claude/skills/` cobrindo o padrão dotnet do kit: `dotnet-backend-standards` (.NET 10 LTS / C# 14, Clean Architecture + DDD, exceções tipadas, FluentValidation, JWT, Scalar/OpenAPI, Serilog, cultura pt-BR e baseline de segurança obrigatório), `dotnet-orm-efcore` (EF Core LTS para escritas — Fluent API via `IEntityTypeConfiguration`, query filters de soft-delete, `AsNoTracking`/`Include` explícito, migrations) e `dotnet-orm-dapper` (Dapper para leituras complexas/relatórios/stored procedures, SQL parametrizado, multi-mapping, transações explícitas). As três se cruzam por referências relativas.
+- **Skill `dotnet-project-scaffold`** — referência para gerar a estrutura de um projeto backend .NET novo a partir de dois padrões selecionáveis: `clean` (Clean Architecture + DDD, .NET 10 LTS) e `wafx` (N-Tier em camadas, padrão WAFX, .NET 8 LTS). Documenta árvore de projetos, passos `dotnet new`/`dotnet add reference`, pacotes mínimos e a regra de usar sempre versões **LTS** do framework e ORMs.
+- **Command `/dotnet-new`** — gera o scaffold via `/dotnet-new <nome> [--pattern clean|wafx] [--orm efcore|dapper|both] [--portal <nome>]`. Carrega a skill `dotnet-project-scaffold`, fixa a versão LTS conforme o padrão, mostra o plano antes de gerar e roda `dotnet build` no final. README passa a anunciar **14 commands** e **42 skills**.
+
+### Alterado
+- `README.md` — bloco "O que é instalado" atualizado: 13 → **14 slash commands** (inclui `/dotnet-new`) e 38 → **42 cápsulas** de conhecimento técnico.
+
+---
+
 ## [1.6.0] — 2026-06-22
 
 ### Alterado
