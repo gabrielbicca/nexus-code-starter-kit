@@ -1,0 +1,30 @@
+# ============================================================
+#  Spec-Driven Check — CI do projeto
+#  Roda a coerência spec-driven (specs ↔ migrations ↔ índice ↔ código)
+#  em pull requests e pushes. Instalado por: npx nexus-code-starter-kit (opcional).
+# ============================================================
+name: Spec-Driven Check
+
+on:
+  push:
+    branches: [main, master]
+  pull_request:
+
+jobs:
+  spec-drift:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Setup Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.x"
+
+      - name: Spec-Drift
+        run: |
+          if [ -f .claude/scripts/spec_drift.py ]; then
+            python .claude/scripts/spec_drift.py .
+          else
+            echo "spec_drift.py não encontrado — kit não instalado. Pulando."
+          fi

@@ -83,8 +83,8 @@ def run_script(name: str, script_path: Path, project_path: str, url: Optional[st
         dict with keys: name, passed, output, skipped
     """
     if not check_script_exists(script_path):
-        print_warning(f"{name}: Script not found, skipping")
-        return {"name": name, "passed": True, "output": "", "skipped": True}
+        print_warning(f"{name}: script ausente ({script_path.name}) — pulado (não executado)")
+        return {"name": name, "passed": True, "output": "", "skipped": True, "missing": True}
     
     print_step(f"Running: {name}")
     
@@ -154,6 +154,10 @@ def print_summary(results: List[dict]):
     
     print()
     
+    missing_count = sum(1 for r in results if r.get("missing"))
+    if missing_count:
+        print_warning(f"{missing_count} check(s) pulada(s) por script ausente — não executada(s).")
+
     if failed_count > 0:
         print_error(f"{failed_count} check(s) FAILED - Please fix before proceeding")
         return False

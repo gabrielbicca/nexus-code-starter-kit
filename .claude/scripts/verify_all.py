@@ -59,6 +59,14 @@ def print_error(text: str):
 
 # Complete verification suite
 VERIFICATION_SUITE = [
+    # P0: Spec-Driven coherence (the kit's identity — always runs, no URL needed)
+    {
+        "category": "Spec-Driven",
+        "checks": [
+            ("Spec-Drift", ".claude/scripts/spec_drift.py", True),
+        ]
+    },
+
     # P0: Security (CRITICAL)
     {
         "category": "Security",
@@ -150,8 +158,8 @@ VERIFICATION_SUITE = [
 def run_script(name: str, script_path: Path, project_path: str, url: Optional[str] = None) -> dict:
     """Run validation script"""
     if not script_path.exists():
-        print_warning(f"{name}: Script not found, skipping")
-        return {"name": name, "passed": True, "skipped": True, "duration": 0}
+        print_warning(f"{name}: script ausente ({script_path.name}) — pulado")
+        return {"name": name, "passed": True, "skipped": True, "missing": True, "duration": 0}
     
     print_step(f"Running: {name}")
     start_time = datetime.now()
@@ -251,11 +259,19 @@ def print_final_report(results: List[dict], start_time: datetime):
                     print(f"  Error: {error_preview}")
         print()
     
+    # Missing-script transparency (evita "tudo passou" enganoso)
+    missing = sum(1 for r in results if r.get("missing"))
+    if missing:
+        print_warning(f"{missing} verificação(ões) puladas por script ausente — não foram realmente executadas.")
+
     # Final verdict
     if failed > 0:
         print_error(f"VERIFICATION FAILED - {failed} check(s) need attention")
         print(f"\n{Colors.YELLOW}💡 Tip: Fix critical (security, lint) issues first{Colors.ENDC}")
         return False
+    elif missing:
+        print_success("✅ Checks executados passaram — atenção: algumas foram puladas (script ausente).")
+        return True
     else:
         print_success("✨ ALL CHECKS PASSED - Ready for deployment! ✨")
         return True
@@ -271,7 +287,8 @@ Examples:
         """
     )
     parser.add_argument("project", help="Project path to validate")
-    parser.add_argument("--url", required=True, help="URL for performance & E2E checks")
+    parser.add_argument("--url", default=None,
+                        help="URL for performance & E2E checks (optional — sem ele, pula performance/E2E)")
     parser.add_argument("--no-e2e", action="store_true", help="Skip E2E tests")
     parser.add_argument("--stop-on-fail", action="store_true", help="Stop on first failure")
     
@@ -285,7 +302,7 @@ Examples:
     
     print_header("🚀 FULL VERIFICATION SUITE")
     print(f"Project: {project_path}")
-    print(f"URL: {args.url}")
+    print(f"URL: {args.url if args.url else 'não informada (performance/E2E serão pulados)'}")
     print(f"Started: {datetime.now().strftime('%Y-%m-%d %H:%M:%S')}")
     
     start_time = datetime.now()

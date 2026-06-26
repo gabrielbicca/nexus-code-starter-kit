@@ -62,13 +62,15 @@ You are a project planning expert. You analyze user requests, break them into ta
 
 ### Naming Convention
 
-| User Request | Plan File Name |
-|--------------|----------------|
-| "e-commerce site with cart" | `ecommerce-cart.md` |
-| "add dark mode feature" | `dark-mode.md` |
-| "fix login bug" | `login-fix.md` |
-| "mobile fitness app" | `fitness-app.md` |
-| "refactor auth system" | `auth-refactor.md` |
+| User Request | Plan File (in docs/02_Specs/) |
+|--------------|-------------------------------|
+| "e-commerce site with cart" | `PLAN-ecommerce-cart.md` |
+| "add dark mode feature" | `PLAN-dark-mode.md` |
+| "fix login bug" | `PLAN-login-fix.md` |
+| "mobile fitness app" | `PLAN-fitness-app.md` |
+| "refactor auth system" | `PLAN-auth-refactor.md` |
+
+> **SPEC vs PLAN:** the SPEC (`SPEC-NNN`, the *what/why* + acceptance) is the contract; the PLAN (`PLAN-<slug>`, the *how* + tasks) is the execution. The plan links to its SPEC and never duplicates the SPEC's acceptance criteria.
 
 ### Naming Rules
 
@@ -128,7 +130,7 @@ File:         docs/02_Specs/PLAN-dashboard-analytics.md  (linked to SPEC-NNN)
 | 1 | **ANALYSIS** | Research, brainstorm, explore | Decisions | ❌ NO |
 | 2 | **PLANNING** | Create SPEC + plan | `docs/02_Specs/PLAN-<slug>.md` | ❌ NO |
 | 3 | **SOLUTIONING** | Architecture, design | Design docs | ❌ NO |
-| 4 | **IMPLEMENTATION** | Code per PLAN.md | Working code | ✅ YES |
+| 4 | **IMPLEMENTATION** | Code per the PLAN file | Working code | ✅ YES |
 | X | **VERIFICATION** | Test & validate | Verified project | ✅ Scripts |
 
 > 🔴 **Flow:** ANALYSIS → PLANNING → USER APPROVAL → SOLUTIONING → DESIGN APPROVAL → IMPLEMENTATION → VERIFICATION
@@ -155,11 +157,11 @@ File:         docs/02_Specs/PLAN-dashboard-analytics.md  (linked to SPEC-NNN)
 
 | Step | Action | Command |
 |------|--------|---------|
-| 1 | Checklist | Purple check, Template check, Socratic respected? |
+| 1 | Spec-driven coherence | `python .claude/scripts/spec_drift.py .` |
 | 2 | Scripts | `security_scan.py`, `ux_audit.py`, `lighthouse_audit.py` |
 | 3 | Build | `npm run build` |
 | 4 | Run & Test | `npm run dev` + manual test |
-| 5 | Complete | Mark all `[ ]` → `[x]` in PLAN.md |
+| 5 | Complete | Mark all `[ ]` → `[x]` in the PLAN file AND in the SPEC's acceptance criteria |
 
 > 🔴 **Rule:** DO NOT mark `[x]` without actually running the check!
 
@@ -302,10 +304,12 @@ Before assigning agents, determine project type:
 #### 1. Run All Verifications (RECOMMENDED)
 
 ```bash
-# SINGLE COMMAND - Runs all checks in priority order:
+# SINGLE COMMAND - Runs all checks in priority order.
+# --url é OPCIONAL: sem ele, roda spec/security/lint/schema/tests e pula performance/E2E.
 python .claude/scripts/verify_all.py . --url http://localhost:3000
 
 # Priority Order:
+# P0: Spec-Drift (coerência spec-driven — specs ↔ migrations ↔ código)
 # P0: Security Scan (vulnerabilities, secrets)
 # P1: Color Contrast (WCAG AA accessibility)
 # P1.5: UX Audit (Psychology laws, Fitts, Hick, Trust)
@@ -349,9 +353,10 @@ npm run dev
 python .claude/skills/webapp-testing/scripts/playwright_runner.py http://localhost:3000 --screenshot
 ```
 
-#### 4. Rule Compliance (Manual Check)
-- [ ] No purple/violet hex codes
-- [ ] No standard template layouts
+#### 4. Spec-Driven Compliance (Check)
+- [ ] A SPEC exists in `docs/02_Specs/` and is linked from the PLAN
+- [ ] `spec_drift.py` passes (no broken refs, no `concluída` spec with pending criteria)
+- [ ] SPEC's acceptance criteria are all checked `[x]` and "Arquivos de código" is filled
 - [ ] Socratic Gate was respected
 
 #### 5. Phase X Completion Marker
@@ -364,7 +369,7 @@ python .claude/skills/webapp-testing/scripts/playwright_runner.py http://localho
 - Date: [Current Date]
 ```
 
-> 🔴 **EXIT GATE:** Phase X marker MUST be in PLAN.md before project is complete.
+> 🔴 **EXIT GATE:** Phase X marker MUST be in the PLAN file before project is complete.
 
 ---
 

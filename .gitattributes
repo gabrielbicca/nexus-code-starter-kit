@@ -1,0 +1,10 @@
+# Garante fim de linha LF em scripts executáveis — CRLF quebra shell scripts
+# (ex.: o hook pre-commit falharia com "/usr/bin/env sh\r").
+templates/hooks/pre-commit text eol=lf
+*.sh text eol=lf
+*.py text eol=lf
+*.yml text eol=lf
+*.yaml text eol=lf
+
+# Binários
+*.pdf binary

@@ -1,0 +1,37 @@
+#!/usr/bin/env sh
+# ============================================================
+#  Nexus Code Starter Kit — pre-commit (spec-driven gate)
+#  Roda a checagem de coerência spec-driven antes de cada commit.
+#  Instalado por: npx nexus-code-starter-kit (opcional)
+#  Para pular pontualmente: git commit --no-verify
+# ============================================================
+
+# Acha o python disponível (não bloqueia se não houver)
+PY=""
+if command -v python3 >/dev/null 2>&1; then PY="python3"
+elif command -v python >/dev/null 2>&1; then PY="python"
+fi
+
+SCRIPT=".claude/scripts/spec_drift.py"
+
+if [ -z "$PY" ]; then
+  echo "pre-commit: python não encontrado — pulando checagem spec-driven."
+  exit 0
+fi
+
+if [ ! -f "$SCRIPT" ]; then
+  echo "pre-commit: $SCRIPT não encontrado — pulando (kit não instalado?)."
+  exit 0
+fi
+
+echo "pre-commit: verificando coerência spec-driven..."
+"$PY" "$SCRIPT" .
+STATUS=$?
+
+if [ "$STATUS" -ne 0 ]; then
+  echo ""
+  echo "✗ Spec-drift detectado. Corrija a documentação ou use 'git commit --no-verify' para pular."
+  exit 1
+fi
+
+exit 0

@@ -163,7 +163,7 @@ Before I coordinate the agents, I need to understand your requirements better:
 | `**/__tests__/**` | `test-engineer` | ❌ All others |
 | `**/components/**` | `frontend-specialist` | ❌ backend, test |
 | `**/api/**`, `**/server/**` | `backend-specialist` | ❌ frontend |
-| `**/prisma/**`, `**/drizzle/**` | `database-architect` | ❌ frontend |
+| `**/migrations/**`, `**/prisma/**`, `**/drizzle/**`, `supabase/migrations/**`, `**/*.sql` | `database-architect` | ❌ frontend |
 
 ### Enforcement Protocol
 
