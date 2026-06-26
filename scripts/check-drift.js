@@ -154,6 +154,60 @@ if (!fs.existsSync(TEMPLATES_META)) {
   }
 }
 
+// ---------- 5b. Contagem de commands no README ----------
+const COMMANDS_DIR = path.join(ROOT, ".claude", "commands");
+const commandFiles = fs.existsSync(COMMANDS_DIR)
+  ? fs.readdirSync(COMMANDS_DIR).filter((f) => f.endsWith(".md"))
+  : [];
+info(`commands on disk: ${commandFiles.length}`);
+const cmdCountMatch = readme.match(/(\d+)\s+slash commands/);
+if (!cmdCountMatch) {
+  fail("README.md não tem a string 'NN slash commands' (não foi possível validar contagem)");
+} else {
+  const n = parseInt(cmdCountMatch[1], 10);
+  if (n !== commandFiles.length) {
+    fail(`README.md anuncia ${n} commands, mas existem ${commandFiles.length} em .claude/commands/`);
+  } else {
+    ok(`README.md anuncia contagem correta de commands (${n})`);
+  }
+}
+
+// ---------- 5c. Scripts referenciados existem ----------
+// Garante que todo caminho .claude/.../*.py citado nos runners existe no disco.
+// Previne "script-fantasma" (referência verde que nunca roda).
+const RUNNERS = [
+  path.join(ROOT, ".claude", "scripts", "checklist.py"),
+  path.join(ROOT, ".claude", "scripts", "verify_all.py"),
+];
+const scriptRefPattern = /\.claude\/[A-Za-z0-9_\/.-]+\.py/g;
+const referenced = new Set();
+for (const runner of RUNNERS) {
+  if (!fs.existsSync(runner)) continue;
+  const txt = fs.readFileSync(runner, "utf8");
+  let r;
+  while ((r = scriptRefPattern.exec(txt)) !== null) referenced.add(r[0]);
+}
+const missingScripts = [...referenced]
+  .filter((rel) => !fs.existsSync(path.join(ROOT, rel)))
+  .sort();
+if (missingScripts.length) {
+  fail(`scripts referenciados nos runners que NÃO existem: ${missingScripts.join(", ")}`);
+} else {
+  ok(`todos os ${referenced.size} scripts referenciados nos runners existem`);
+}
+
+// ---------- 5d. Templates de automação ----------
+const AUTOMATION_TEMPLATES = [
+  path.join(ROOT, "templates", "hooks", "pre-commit"),
+  path.join(ROOT, "templates", "github-workflows", "spec-check.yml"),
+];
+const missingAuto = AUTOMATION_TEMPLATES.filter((f) => !fs.existsSync(f)).map((f) => path.relative(ROOT, f));
+if (missingAuto.length) {
+  fail(`templates de automação ausentes (instalador os referencia): ${missingAuto.join(", ")}`);
+} else {
+  ok("templates de automação (pre-commit, spec-check.yml) presentes");
+}
+
 // ---------- 6. Resultado ----------
 console.log();
 if (errors > 0) {

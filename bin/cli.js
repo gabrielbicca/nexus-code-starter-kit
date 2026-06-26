@@ -59,7 +59,8 @@ Fluxo interativo:
        cancelar
   3. Opcionalmente gera CLAUDE.md (não toca se já existir).
   4. Cria a base de conhecimento em docs/ (núcleo spec-driven; preserva arquivos existentes).
-  5. Grava .claude/.kit-version com a versão instalada.
+  5. Opcionalmente instala o gate spec-driven (pre-commit + GitHub Actions).
+  6. Grava .claude/.kit-version com a versão instalada.
 
 Repo: https://github.com/gabrielbicca/nexus-code-starter-kit
 `);
@@ -192,6 +193,47 @@ const DOCS_SUBDIRS = [
 
 // Pasta-fonte dos templates do kit, copiada para docs/00_Meta do projeto.
 const TEMPLATES_META_DIR = path.join(KIT_DIR, "templates", "00_Meta");
+
+// Templates de automação (hook + workflow) — instalados sob demanda.
+const TEMPLATE_PRECOMMIT  = path.join(KIT_DIR, "templates", "hooks", "pre-commit");
+const TEMPLATE_WORKFLOW   = path.join(KIT_DIR, "templates", "github-workflows", "spec-check.yml");
+
+// Instala o gate spec-driven na automação do projeto (idempotente, não-destrutivo).
+function instalarAutomacaoSpec(destino) {
+  const resultados = [];
+
+  // pre-commit hook (só se for um repo git)
+  const gitDir = path.join(destino, ".git");
+  if (fs.existsSync(gitDir) && fs.existsSync(TEMPLATE_PRECOMMIT)) {
+    const hooksDir = path.join(gitDir, "hooks");
+    const hookDest = path.join(hooksDir, "pre-commit");
+    if (!fs.existsSync(hookDest)) {
+      fs.mkdirSync(hooksDir, { recursive: true });
+      fs.copyFileSync(TEMPLATE_PRECOMMIT, hookDest);
+      try { fs.chmodSync(hookDest, 0o755); } catch {}
+      resultados.push("hook pre-commit instalado (.git/hooks/pre-commit)");
+    } else {
+      resultados.push("pre-commit já existe — preservado (não sobrescrito)");
+    }
+  } else if (!fs.existsSync(gitDir)) {
+    resultados.push("sem repositório git — hook pre-commit pulado (rode 'git init' antes)");
+  }
+
+  // GitHub Actions workflow
+  if (fs.existsSync(TEMPLATE_WORKFLOW)) {
+    const wfDir = path.join(destino, ".github", "workflows");
+    const wfDest = path.join(wfDir, "spec-check.yml");
+    if (!fs.existsSync(wfDest)) {
+      fs.mkdirSync(wfDir, { recursive: true });
+      fs.copyFileSync(TEMPLATE_WORKFLOW, wfDest);
+      resultados.push("workflow CI instalado (.github/workflows/spec-check.yml)");
+    } else {
+      resultados.push("spec-check.yml já existe — preservado");
+    }
+  }
+
+  return resultados;
+}
 
 function docsReadmeIndex(nome) {
   return `# Base de Conhecimento — ${nome}
@@ -384,10 +426,19 @@ async function main() {
 ${blocoBaseConhecimento()}
 ---
 
-## ⚙️ Protocolo Obrigatório
+## ⚙️ Protocolo Obrigatório (spec-driven)
 
-Para qualquer **feature nova**, invoque \`@orchestrator\` antes de começar.
-Para bug fixes simples (typo, estilo, ajuste isolado), pode pular.
+> **A documentação vem antes do código.** Nenhuma feature nova nasce sem uma SPEC.
+
+Para qualquer **feature nova**, siga o fluxo (detalhado em \`docs/00_Meta/AGENT_FLOW.md\`):
+
+1. \`/spec <descrição>\` → cria a **SPEC** (o quê / por quê + critérios de aceite)
+2. \`/plan <descrição>\` → cria o **PLAN** (a quebra de tarefas, linkada à SPEC)
+3. \`/adr <decisão>\` → registra decisões arquiteturais (quando houver)
+4. \`@orchestrator\` → implementa seguindo a SPEC/PLAN (ele **exige** a SPEC antes de codar)
+5. \`/verify\` → valida tudo (inclui a checagem spec-driven) antes de concluir
+
+Bug fixes simples (typo, estilo, ajuste isolado de 1 arquivo) podem pular a SPEC e o \`@orchestrator\`.
 
 ---
 
@@ -431,6 +482,20 @@ Para bug fixes simples (typo, estilo, ajuste isolado), pode pular.
     info("00_Meta, 01_Architecture, 02_Specs/Migrations, 03_Sprint_Logs, 04_Assets");
   }
 
+  // ---------- automação spec-driven (hook + CI) ----------
+  console.log();
+  const querAutomacao = await askSN("  Instalar o gate spec-driven na automação (pre-commit + GitHub Actions)?");
+  if (querAutomacao) {
+    const res = instalarAutomacaoSpec(destino);
+    if (res.length) {
+      res.forEach((r) => info(r));
+    } else {
+      info("nada a instalar.");
+    }
+  } else {
+    info("automação pulada — você pode rodar a verificação manualmente com /verify.");
+  }
+
   // ---------- summary ----------
   console.log();
   header("✅ KIT INSTALADO!");
@@ -439,14 +504,27 @@ Para bug fixes simples (typo, estilo, ajuste isolado), pode pular.
   console.log(yellow("  Próximos passos:\n"));
   console.log(`  ${bold("1.")} Abra o projeto no Claude Code:`);
   console.log(gray(`     claude "${destino}"\n`));
-  console.log(`  ${bold("2.")} Para qualquer feature nova, diga ao Claude:`);
-  console.log(gray(`     @orchestrator quero criar [descreva aqui]\n`));
+  console.log(`  ${bold("2.")} Para qualquer feature nova, siga o fluxo spec-driven:`);
+  console.log(gray(`     /spec [descreva]  →  /plan  →  @orchestrator  →  /verify\n`));
+  console.log(`  ${bold("3.")} Guia do fluxo: ${gray("docs/00_Meta/AGENT_FLOW.md")}\n`);
   console.log(cyan("  Boa codagem! 🚀\n"));
 
   rl.close();
 }
 
-main().catch((err) => {
-  console.error("\n  Erro inesperado:", err.message);
-  process.exit(1);
-});
+// Só roda o fluxo interativo quando executado direto (permite testar as
+// funções via require sem disparar os prompts).
+if (require.main === module) {
+  main().catch((err) => {
+    console.error("\n  Erro inesperado:", err.message);
+    process.exit(1);
+  });
+}
+
+module.exports = {
+  criarEsqueletoDocs,
+  instalarAutomacaoSpec,
+  blocoBaseConhecimento,
+  docsReadmeIndex,
+  copyDir,
+};

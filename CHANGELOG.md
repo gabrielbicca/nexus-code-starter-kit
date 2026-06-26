@@ -6,6 +6,31 @@ Formato baseado em [Keep a Changelog](https://keepachangelog.com/pt-BR/1.0.0/).
 
 ---
 
+## [1.7.0] — 2026-06-26
+
+> Tema: **spec-driven verificável, mais didático e mais fácil de usar** — sem remover nenhuma validação existente.
+
+### Adicionado
+- **Validador spec-drift com checagens de conformidade** (`.claude/scripts/spec_drift.py`) — além da integridade referencial (links), agora valida: toda `Migration-*.md` referencia uma `SPEC`; SPEC `concluída` com critério de aceite pendente vira **erro**; SPEC ativa sem rastreabilidade de código vira aviso; imprime um inventário de SPECs por status. Continua tolerante a stacks (projeto sem `docs/` não falha).
+- **Spec-drift no portão principal** — `verify_all.py` ganhou a categoria **Spec-Driven** como **primeira** verificação (a suíte "completa" antes deixava de fora justamente a checagem que dá identidade ao kit).
+- **Command `/verify`** — caminho fácil e didático para rodar a verificação (rápida, completa ou só spec-drift). README passa a anunciar **14 commands**.
+- **Gate spec-driven na automação do projeto** — templates `templates/hooks/pre-commit` e `templates/github-workflows/spec-check.yml`; o CLI e o `install.ps1` oferecem instalá-los (opcional, não-destrutivo). Fecha o loop: o gate deixa de depender só de o humano lembrar de rodar.
+- **Scripts antes inexistentes** — `vulnerability-scanner/scripts/dependency_analyzer.py` e `performance-profiling/scripts/bundle_analyzer.py` (advisory) eram referenciados pelo `verify_all.py` mas não existiam; agora existem e fazem checagens honestas e leves.
+
+### Alterado
+- **`verify_all.py`: `--url` virou opcional** — a suíte completa agora roda em projeto backend-only/biblioteca/mobile e na fase de planejamento; sem URL, pula só performance/E2E.
+- **Transparência de "script ausente"** — `checklist.py` e `verify_all.py` deixam de contar um script ausente como sucesso silencioso; o relatório final avisa quantas checagens foram puladas por ausência ("não executadas"), evitando o "✨ tudo passou" enganoso.
+- **CLAUDE.md gerado ensina o fluxo spec-driven** — o "Protocolo Obrigatório" (CLI e `install.ps1`) agora descreve `/spec → /plan → /adr → @orchestrator → /verify` e linka `docs/00_Meta/AGENT_FLOW.md`, em vez de só "invoque @orchestrator".
+- **Templates mais claros e stack-neutros** — `Feature-Spec-Template.md` e `Migration-Template.md` ficam genéricos por padrão, com o bloco Postgres/Supabase+RLS em seção **opcional** (colapsável); a SPEC explica a distinção **SPEC (contrato) × PLAN (execução)** e a rastreabilidade de código. `AGENT_FLOW.md` reescrito como guia didático ("spec-driven em 5 passos" + tabela SPEC×PLAN×ADR×Migration).
+- **`orchestrator.md`** — ownership de arquivos de banco generalizado (`migrations/`, `supabase/migrations/`, `*.sql`, além de Prisma/Drizzle), removendo o viés de stack único.
+- **`project-planner.md`** — removidas regras cargo-cult de design alheias ao planejamento ("no purple/violet hex", "no standard layouts", "Purple check"); corrigidas as referências ao genérico `PLAN.md` e os exemplos de nome sem o prefixo `PLAN-`; Phase X passa a checar conformidade spec-driven.
+
+### Corrigido
+- **Paridade `install.ps1`** — o `docs/README.md` gerado pelo PowerShell agora inclui as tabelas `## Specs`/`## ADRs` e o "Como criar artefatos" (antes só o CLI Node criava; sem elas, `/spec` e `/adr` não tinham onde escrever).
+- **Drift guard estendido** (`scripts/check-drift.js`) — passa a validar a contagem de commands no README, a **existência de todo script** referenciado em `checklist.py`/`verify_all.py` (pega "script-fantasma") e a presença dos templates de automação.
+
+---
+
 ## [1.6.0] — 2026-06-22
 
 ### Alterado

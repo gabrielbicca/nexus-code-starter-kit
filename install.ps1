@@ -218,10 +218,19 @@ Este projeto é **spec-driven**: a documentação em ``docs/`` é o cérebro do 
 
 ---
 
-## ⚙️ Protocolo Obrigatório
+## ⚙️ Protocolo Obrigatório (spec-driven)
 
-Para qualquer **feature nova**, invoque ``@orchestrator`` antes de começar.
-Para bug fixes simples, pode pular.
+> **A documentação vem antes do código.** Nenhuma feature nova nasce sem uma SPEC.
+
+Para qualquer **feature nova**, siga o fluxo (detalhado em ``docs/00_Meta/AGENT_FLOW.md``):
+
+1. ``/spec <descrição>`` → cria a **SPEC** (o quê / por quê + critérios de aceite)
+2. ``/plan <descrição>`` → cria o **PLAN** (a quebra de tarefas, linkada à SPEC)
+3. ``/adr <decisão>`` → registra decisões arquiteturais (quando houver)
+4. ``@orchestrator`` → implementa seguindo a SPEC/PLAN (ele **exige** a SPEC antes de codar)
+5. ``/verify`` → valida tudo (inclui a checagem spec-driven) antes de concluir
+
+Bug fixes simples (typo, estilo, ajuste isolado) podem pular a SPEC e o ``@orchestrator``.
 
 ---
 
@@ -293,6 +302,24 @@ Esta pasta é a **fonte de verdade** do projeto (spec-driven): consulte antes de
 | 02_Specs/Migrations/ | Docs (.md) das migrations |
 | 03_Sprint_Logs/ | Diários de sprint |
 | 04_Assets/ | Imagens e diagramas exportados |
+
+## Como criar artefatos
+
+- Nova feature → ``/spec <descrição>`` (usa ``00_Meta/Feature-Spec-Template.md``)
+- Decisão arquitetural → ``/adr <decisão>`` (usa ``00_Meta/ADR-Template.md``)
+- Migration → documente em ``02_Specs/Migrations/`` a partir do ``Migration-Template.md``
+
+## Specs
+
+| Spec | Status | O que implementou |
+|---|---|---|
+| _(adicione aqui)_ | | |
+
+## ADRs
+
+| ADR | Decisão |
+|---|---|
+| _(adicione aqui)_ | |
 "@
     $docs_index | Out-File -FilePath $docs_readme -Encoding UTF8
 }
@@ -300,6 +327,43 @@ if ($docs_ja_existe) {
     Write-Info "docs/ já existe — estrutura garantida (arquivos existentes preservados)."
 } else {
     Write-OK "docs/ criado (base de conhecimento — núcleo spec-driven do projeto)"
+}
+
+# ---------- Automação spec-driven (hook + CI) ----------
+Write-Host ""
+if (PerguntarSN "  Instalar o gate spec-driven na automação (pre-commit + GitHub Actions)?") {
+    # pre-commit hook (só se for repo git)
+    $git_dir = Join-Path $destino ".git"
+    $tpl_hook = Join-Path $kit_root "templates\hooks\pre-commit"
+    if ((Test-Path $git_dir) -and (Test-Path $tpl_hook)) {
+        $hooks_dir = Join-Path $git_dir "hooks"
+        $hook_dest = Join-Path $hooks_dir "pre-commit"
+        if (-not (Test-Path $hook_dest)) {
+            if (-not (Test-Path $hooks_dir)) { New-Item -ItemType Directory -Path $hooks_dir -Force | Out-Null }
+            Copy-Item $tpl_hook $hook_dest
+            Write-Info "hook pre-commit instalado (.git/hooks/pre-commit)"
+        } else {
+            Write-Info "pre-commit já existe — preservado"
+        }
+    } elseif (-not (Test-Path $git_dir)) {
+        Write-Info "sem repositório git — hook pre-commit pulado (rode 'git init' antes)"
+    }
+
+    # GitHub Actions workflow
+    $tpl_wf = Join-Path $kit_root "templates\github-workflows\spec-check.yml"
+    if (Test-Path $tpl_wf) {
+        $wf_dir = Join-Path $destino ".github\workflows"
+        $wf_dest = Join-Path $wf_dir "spec-check.yml"
+        if (-not (Test-Path $wf_dest)) {
+            if (-not (Test-Path $wf_dir)) { New-Item -ItemType Directory -Path $wf_dir -Force | Out-Null }
+            Copy-Item $tpl_wf $wf_dest
+            Write-Info "workflow CI instalado (.github/workflows/spec-check.yml)"
+        } else {
+            Write-Info "spec-check.yml já existe — preservado"
+        }
+    }
+} else {
+    Write-Info "automação pulada — você pode rodar a verificação manualmente com /verify."
 }
 
 # ---------- Limpeza temporária ----------
@@ -317,6 +381,8 @@ Write-Host "  Para começar:" -ForegroundColor Yellow
 Write-Host "  1. Abra o Claude Code na pasta do projeto" -ForegroundColor White
 Write-Host "     claude $destino" -ForegroundColor Gray
 Write-Host ""
-Write-Host "  2. Para qualquer feature nova, diga:" -ForegroundColor White
-Write-Host "     @orchestrator quero criar [descreva aqui]" -ForegroundColor Gray
+Write-Host "  2. Para qualquer feature nova, siga o fluxo spec-driven:" -ForegroundColor White
+Write-Host "     /spec [descreva]  ->  /plan  ->  @orchestrator  ->  /verify" -ForegroundColor Gray
+Write-Host ""
+Write-Host "  3. Guia do fluxo: docs/00_Meta/AGENT_FLOW.md" -ForegroundColor White
 Write-Host ""

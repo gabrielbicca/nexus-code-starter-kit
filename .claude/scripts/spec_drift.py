@@ -3,20 +3,29 @@
 Spec-Drift Validator — coerência do fluxo spec-driven
 =====================================================
 
-Valida, no projeto-alvo, que:
+Valida, no projeto-alvo, que a documentação spec-driven está coerente:
+
+  REFERENCIAL (links não quebrados)
   1. Toda migration .sql tem um doc Migration-*.md em docs/02_Specs/Migrations/
   2. SPEC-NNN / ADR-NNN referenciados no código existem como arquivo em docs/
   3. O índice docs/README.md lista as SPECs e ADRs existentes
 
+  CONFORMIDADE (a spec reflete a realidade)
+  4. Toda Migration-*.md referencia uma SPEC-NNN
+  5. SPEC `concluída` tem TODOS os critérios de aceite marcados ([x])
+  6. SPEC `em-progresso`/`concluída` tem "Arquivos de código" preenchido (elo SPEC↔código)
+
 Tolerante a stacks variados: se docs/ ou migrations não existem, não falha.
-Falha (exit 1) apenas em drift real: migration sem doc ou referência quebrada.
-Avisos (numeração, índice) não derrubam o exit code.
+Falha (exit 1) em drift REAL: migration sem doc, referência quebrada,
+spec concluída com critério pendente.
+Avisos (numeração, índice, rastreabilidade, migration sem SPEC) não derrubam o exit code.
 
 Uso:
     python .claude/scripts/spec_drift.py .
 """
 import sys
 import re
+import unicodedata
 from pathlib import Path
 
 # Saída robusta em Windows: evita UnicodeEncodeError quando o stdout não é UTF-8
@@ -41,6 +50,9 @@ SKIP_DIRS = {".git", "node_modules", "dist", "build", ".next", "out", "vendor",
 TEXT_EXT = {".md", ".ts", ".tsx", ".js", ".jsx", ".mjs", ".cjs", ".py",
             ".sql", ".json", ".yml", ".yaml", ".sh", ".txt", ".vue", ".svelte"}
 
+# Marcadores que indicam um campo ainda NÃO preenchido (placeholder do template).
+PLACEHOLDER_MARKS = ("preencher", "<caminhos", "<caminho", "adicione aqui", "_(", "—", "n/a", "tbd")
+
 warnings = []
 errors = []
 
@@ -59,6 +71,14 @@ def first_num(name):
 def norm(n):
     return (n.lstrip("0") or "0") if n else None
 
+
+def strip_accents(s):
+    return "".join(c for c in unicodedata.normalize("NFD", s) if unicodedata.category(c) != "Mn")
+
+
+# ---------------------------------------------------------------------------
+# REFERENCIAL
+# ---------------------------------------------------------------------------
 
 def check_migrations(root):
     sqls = []
@@ -151,15 +171,130 @@ def check_index(root, specs, adrs):
         ok("Índice docs/README.md em dia com as SPECs/ADRs.")
 
 
+# ---------------------------------------------------------------------------
+# CONFORMIDADE
+# ---------------------------------------------------------------------------
+
+def check_migration_docs_reference_spec(root):
+    """Toda Migration-*.md deve citar uma SPEC-NNN (elo banco↔feature)."""
+    doc_dir = root / MIG_DOC_DIR
+    if not doc_dir.is_dir():
+        return
+    docs = [f for f in doc_dir.glob("*.md") if f.is_file()]
+    if not docs:
+        return
+    no_spec = []
+    for d in docs:
+        try:
+            text = d.read_text(encoding="utf-8", errors="ignore")
+        except Exception:
+            continue
+        if not re.search(r"\bSPEC-\d{1,4}\b", text):
+            no_spec.append(d.name)
+    if no_spec:
+        shown = ", ".join(no_spec[:8]) + (" ..." if len(no_spec) > 8 else "")
+        warn(f"{len(no_spec)} doc(s) de migration sem referência a SPEC: {shown}")
+    else:
+        ok(f"Todas as {len(docs)} migration(s) documentadas referenciam uma SPEC.")
+
+
+def parse_spec(text):
+    """Extrai (status, total_criterios, criterios_pendentes, codigo_preenchido)."""
+    # Status: célula da tabela "| Status | <valor> |"
+    status = ""
+    m = re.search(r"\|\s*Status\s*\|\s*`?([^|`]+?)`?\s*\|", text, re.IGNORECASE)
+    if m:
+        status = strip_accents(m.group(1).strip().lower())
+
+    # Critérios de aceite: checkboxes na seção "Critérios de aceite"
+    total = pend = 0
+    sec = re.search(r"(?is)crit[ée]rios de aceite(.*?)(?:\n##\s|\Z)", text)
+    if sec:
+        block = sec.group(1)
+        for box in re.finditer(r"^\s*[-*]\s*\[( |x|X)\]", block, re.MULTILINE):
+            total += 1
+            if box.group(1) == " ":
+                pend += 1
+
+    # "Arquivos de código" preenchido? (linha da tabela de rastreabilidade)
+    code_filled = None  # None = campo não encontrado no arquivo
+    cm = re.search(r"(?im)^\|\s*Arquivos de c[óo]digo\s*\|\s*(.+?)\s*\|", text)
+    if cm:
+        val = strip_accents(cm.group(1).strip().lower())
+        val_clean = val.strip("`<> ")
+        code_filled = bool(val_clean) and not any(p in val for p in PLACEHOLDER_MARKS)
+
+    return status, total, pend, code_filled
+
+
+def check_spec_conformance(root, specs):
+    """Status × critérios de aceite × rastreabilidade de código."""
+    p = root / SPEC_DIR
+    if not p.is_dir() or not specs:
+        return
+    files = [f for f in p.glob("SPEC-*.md") if f.is_file()]
+    if not files:
+        return
+
+    inventory = {}
+    conform = 0
+    for f in files:
+        try:
+            text = f.read_text(encoding="utf-8", errors="ignore")
+        except Exception:
+            continue
+        status, total, pend, code_filled = parse_spec(text)
+        bucket = status if status in ("rascunho", "em-progresso", "concluida", "arquivada") else "outro"
+        # normaliza "em progresso" / "em-progresso"
+        if "progress" in status:
+            bucket = "em-progresso"
+        if "conclu" in status:
+            bucket = "concluida"
+        if "arquiv" in status:
+            bucket = "arquivada"
+        if "rascun" in status:
+            bucket = "rascunho"
+        inventory[bucket] = inventory.get(bucket, 0) + 1
+
+        active = bucket in ("em-progresso", "concluida")
+
+        # Regra 5: concluída com critério pendente = drift real (erro)
+        if bucket == "concluida" and pend > 0:
+            err(f"{f.name}: status 'concluída' mas {pend}/{total} critério(s) de aceite ainda pendente(s).")
+            continue
+
+        # Regra 6: ativa sem rastreabilidade de código = aviso
+        if active and code_filled is False:
+            warn(f"{f.name}: status '{status or '?'}' mas 'Arquivos de código' não preenchido (elo SPEC↔código).")
+            continue
+
+        if active:
+            conform += 1
+
+    # Inventário didático
+    if inventory:
+        resumo = ", ".join(f"{v} {k}" for k, v in sorted(inventory.items()))
+        info(f"Inventário de SPECs: {resumo}.")
+    if conform:
+        ok(f"{conform} SPEC(s) ativa(s) com critérios e rastreabilidade coerentes.")
+
+
 def main():
     root = Path(sys.argv[1] if len(sys.argv) > 1 else ".").resolve()
     print(f"\n{BOLD}{CYAN}Spec-Drift — {root}{END}")
     if not (root / "docs").is_dir():
         info("Sem pasta docs/ — projeto não usa o padrão spec-driven. Nada a validar.")
         sys.exit(0)
+
+    # Referencial
     check_migrations(root)
     specs, adrs = check_references(root)
     check_index(root, specs, adrs)
+
+    # Conformidade
+    check_migration_docs_reference_spec(root)
+    check_spec_conformance(root, specs)
+
     print()
     if errors:
         print(f"{RED}✗ Spec-drift: {len(errors)} problema(s), {len(warnings)} aviso(s).{END}")

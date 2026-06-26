@@ -24,7 +24,7 @@ irm https://raw.githubusercontent.com/gabrielbicca/nexus-code-starter-kit/main/i
 ```
 .claude/
 ├── agents/      → 21 agentes especializados (@orchestrator, @backend-specialist, ...)
-├── commands/    → 13 slash commands (/spec, /adr, /plan, /deploy, ...)
+├── commands/    → 14 slash commands (/spec, /adr, /plan, /verify, /deploy, ...)
 ├── skills/      → 38 cápsulas de conhecimento técnico
 ├── scripts/     → Scripts de verificação e automação
 └── context/     → Blocos de contexto importáveis (@imports do CLAUDE.md)
@@ -53,6 +53,25 @@ docs/
 A criação é idempotente: se `docs/` já existir, os arquivos existentes são preservados (só os faltantes são adicionados).
 
 O `00_Meta/` já vem com os templates prontos. Use os commands **`/spec`** e **`/adr`** para criar `SPEC-NNN` e `ADR-NNN` numerados (numeração automática) a partir deles, e o validador `spec_drift.py` para checar a coerência entre specs, migrations e código.
+
+---
+
+## Validação spec-driven (verificável, não só por convenção)
+
+O kit não só **pede** specs — ele **verifica** que o projeto continua coerente. O validador `spec_drift.py` checa:
+
+- **Referencial** — toda migration `.sql` tem doc; referências `SPEC-NNN`/`ADR-NNN` no código existem; o índice `docs/README.md` está atualizado.
+- **Conformidade** — toda migration documentada cita uma `SPEC`; uma SPEC `concluída` tem **todos** os critérios de aceite marcados; SPECs ativas têm a rastreabilidade de código preenchida.
+
+Três formas de rodar (use o command **`/verify`** para o caminho fácil):
+
+```bash
+python .claude/scripts/checklist.py .      # rápido, durante o dev (inclui spec-drift)
+python .claude/scripts/verify_all.py .     # completo (--url é opcional: sem ele, pula performance/E2E)
+python .claude/scripts/spec_drift.py .     # só a coerência spec-driven
+```
+
+Na instalação, o CLI oferece instalar o **gate spec-driven na automação**: um hook `pre-commit` e um workflow do **GitHub Actions** (`.github/workflows/spec-check.yml`) que rodam o `spec_drift.py` automaticamente. É opcional e não-destrutivo (preserva hooks/workflows existentes).
 
 ---
 
