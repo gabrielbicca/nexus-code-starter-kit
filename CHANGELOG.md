@@ -6,12 +6,30 @@ Formato baseado em [Keep a Changelog](https://keepachangelog.com/pt-BR/1.0.0/).
 
 ---
 
+## [1.9.0] — 2026-07-01
+
+> Tema: **mapeamento de funcionalidades sempre por módulo e roteado para o contexto certo** — corrige dois vícios observados em uso real: o kit gerava um único arquivo compilado de funcionalidades e despejava o mapeamento no `CLAUDE.md`, poluindo-o.
+
+### Adicionado
+- **Convenção "Mapeamento & Documentação — Segregação por Módulo"** no `docs/CLAUDE.template.md` (lida toda sessão): **Regra 1** — todo mapeamento (funcionalidades, entidades/tabelas, fluxos, permissões, regras) é segregado por módulo, **um arquivo `.md` por módulo** em `docs/02_Specs/Modules/Module-<nome>.md`, **nunca** um único arquivo compilado; **Regra 2** — resumos/índices vão para `.claude/context/*.md` (import `@`), **não** para o `CLAUDE.md`, que permanece enxuto. Duas proibições novas cobrem os dois pontos.
+- **Nova subpasta padrão `docs/02_Specs/Modules/`** documentada na estrutura de `docs/` do `CLAUDE.template.md`, do `NEW_PROJECT_BOOTSTRAP.md` e do `PROJECT_MIGRATION.md`.
+
+- **`.NET` fiado ao `backend-specialist`** — o agente ganhou triggers `.NET / C# / ASP.NET Core / dotnet / EF Core / Dapper` na `description` (antes só Node.js/Python, podia nem ser selecionado em projeto .NET), uma seção **".NET / C# Ecosystem"** que roteia explicitamente para as skills `dotnet-backend-standards`, `dotnet-orm-efcore`, `dotnet-orm-dapper` e `dotnet-project-scaffold` + o command `/dotnet-new`, linha de .NET no quadro de seleção de framework e no Quality Control Loop (`dotnet build`/`dotnet test`). O `orchestrator` passa a listar `.NET/ASP.NET Core` no domínio do `backend-specialist`.
+
+### Alterado
+- **Padrão de scaffold `wafx` → `ntier`** — o nome do padrão N-Tier foi genericizado (removida a marca WAFX) em `dotnet-project-scaffold`, `/dotnet-new` e `backend-specialist`. O contrato do command passa a ser `--pattern clean|ntier`; a estrutura e as convenções N-Tier permanecem idênticas.
+- **`PROJECT_MIGRATION.md` — Fase 3.2 reescrita** — deixa de mandar criar um único `SPEC-001-Current-State-Snapshot.md` e passa a exigir **um `Module-<nome>.md` por módulo**, com nota de roteamento de contexto (resumo em `.claude/context/`, detalhe em `docs/02_Specs/Modules/`, nada no `CLAUDE.md`). Checklist-resumo e Proibições da migração atualizados no mesmo sentido; Fase 2.1 cria a subpasta `Modules/`.
+- **`AGENT_FLOW.md`** — tabela "quem é quem" ganhou a linha **`Module-<nome>.md`** (mapeamento por módulo) + nota reforçando "um arquivo por módulo, resumo no context, não no CLAUDE.md".
+- **`.claude/context/business-rules.md`** — nota reforça "uma seção por módulo" e explicita que o detalhe vive em `docs/02_Specs/Modules/` enquanto o resumo fica no arquivo de contexto (não no `CLAUDE.md`).
+
+---
+
 ## [1.8.0] — 2026-06-30
 
 ### Adicionado
 - **Skills de backend .NET** — três cápsulas em `.claude/skills/` cobrindo o padrão dotnet do kit: `dotnet-backend-standards` (.NET 10 LTS / C# 14, Clean Architecture + DDD, exceções tipadas, FluentValidation, JWT, Scalar/OpenAPI, Serilog, cultura pt-BR e baseline de segurança obrigatório), `dotnet-orm-efcore` (EF Core LTS para escritas — Fluent API via `IEntityTypeConfiguration`, query filters de soft-delete, `AsNoTracking`/`Include` explícito, migrations) e `dotnet-orm-dapper` (Dapper para leituras complexas/relatórios/stored procedures, SQL parametrizado, multi-mapping, transações explícitas). As três se cruzam por referências relativas.
-- **Skill `dotnet-project-scaffold`** — referência para gerar a estrutura de um projeto backend .NET novo a partir de dois padrões selecionáveis: `clean` (Clean Architecture + DDD, .NET 10 LTS) e `wafx` (N-Tier em camadas, padrão WAFX, .NET 8 LTS). Documenta árvore de projetos, passos `dotnet new`/`dotnet add reference`, pacotes mínimos e a regra de usar sempre versões **LTS** do framework e ORMs.
-- **Command `/dotnet-new`** — gera o scaffold via `/dotnet-new <nome> [--pattern clean|wafx] [--orm efcore|dapper|both] [--portal <nome>]`. Carrega a skill `dotnet-project-scaffold`, fixa a versão LTS conforme o padrão, mostra o plano antes de gerar e roda `dotnet build` no final. README passa a anunciar **15 commands** e **42 skills**.
+- **Skill `dotnet-project-scaffold`** — referência para gerar a estrutura de um projeto backend .NET novo a partir de dois padrões selecionáveis: `clean` (Clean Architecture + DDD, .NET 10 LTS) e `ntier` (N-Tier em camadas, .NET 8 LTS). Documenta árvore de projetos, passos `dotnet new`/`dotnet add reference`, pacotes mínimos e a regra de usar sempre versões **LTS** do framework e ORMs.
+- **Command `/dotnet-new`** — gera o scaffold via `/dotnet-new <nome> [--pattern clean|ntier] [--orm efcore|dapper|both] [--portal <nome>]`. Carrega a skill `dotnet-project-scaffold`, fixa a versão LTS conforme o padrão, mostra o plano antes de gerar e roda `dotnet build` no final. README passa a anunciar **15 commands** e **42 skills**.
 
 ### Alterado
 - `README.md` — bloco "O que é instalado" atualizado: 14 → **15 slash commands** (inclui `/dotnet-new`) e 38 → **42 cápsulas** de conhecimento técnico.

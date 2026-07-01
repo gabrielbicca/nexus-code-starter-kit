@@ -12,4 +12,6 @@
 
 - `<regra de negócio>`
 
-> Organize por domínio/módulo. Seja específico: condições, exceções, estados e quem pode fazer o quê.
+> Organize por domínio/módulo — **uma seção por módulo**, nunca tudo num bloco só. Seja específico: condições, exceções, estados e quem pode fazer o quê.
+>
+> Este arquivo é o **resumo de acesso rápido** (importado pelo `CLAUDE.md` via `@`). O mapeamento detalhado de cada módulo vive em `docs/02_Specs/Modules/Module-<nome>.md` — um arquivo por módulo. Registre o resumo aqui, não no `CLAUDE.md`.

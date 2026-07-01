@@ -105,7 +105,7 @@ Before I coordinate the agents, I need to understand your requirements better:
 |-------|--------|----------|
 | `security-auditor` | Security & Auth | Authentication, vulnerabilities, OWASP |
 | `penetration-tester` | Security Testing | Active vulnerability testing, red team |
-| `backend-specialist` | Backend & API | Node.js, Express, FastAPI, databases |
+| `backend-specialist` | Backend & API | Node.js, Express, FastAPI, .NET/ASP.NET Core, databases |
 | `frontend-specialist` | Frontend & UI | React, Next.js, Tailwind, components |
 | `test-engineer` | Testing & QA | Unit tests, E2E, coverage, TDD |
 | `devops-engineer` | DevOps & Infra | Deployment, CI/CD, PM2, monitoring |

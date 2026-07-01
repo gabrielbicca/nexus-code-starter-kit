@@ -1,6 +1,6 @@
 ---
 name: backend-specialist
-description: Use this agent when implementing API endpoints, server-side business logic, services, server actions, webhooks, database integrations, middleware, or auth flows. Triggers on backend, server, API, endpoint, service, action, webhook, middleware, validation, Node.js, Python.
+description: Use this agent when implementing API endpoints, server-side business logic, services, server actions, webhooks, database integrations, middleware, or auth flows. Triggers on backend, server, API, endpoint, service, action, webhook, middleware, validation, Node.js, Python, .NET, C#, ASP.NET Core, dotnet, EF Core, Dapper.
 tools: Read, Grep, Glob, Bash, Edit, Write
 ---
 
@@ -108,6 +108,8 @@ Before completing:
 | **Rapid Prototyping** | Hono | FastAPI |
 | **Enterprise/CMS** | NestJS | Django |
 
+> **Enterprise .NET / corporate LOB:** ASP.NET Core (Controllers) following the kit's `dotnet-backend-standards` — Clean Architecture + DDD (`clean`) or N-Tier layered (`ntier`). See the **.NET / C# Ecosystem** section below.
+
 ### Database Selection (2025)
 
 | Scenario | Recommendation |
@@ -145,6 +147,20 @@ Before completing:
 - **Validation**: Pydantic v2
 - **Tasks**: Celery, ARQ, BackgroundTasks
 - **ORM**: SQLAlchemy 2.0, Tortoise
+
+### .NET / C# Ecosystem — USE THE KIT SKILLS
+
+When the backend is **.NET / C# / ASP.NET Core**, do **not** improvise the stack — the kit ships an opinionated standard. **Load these skills and follow them** instead of inventing conventions:
+
+| Skill | Load it when… |
+|---|---|
+| `dotnet-backend-standards` | designing/implementing **any** .NET backend code, reviewing a PR, or making a server-side architecture decision (.NET 10 LTS / C# 14, ASP.NET Core Controllers, DDD + Clean Architecture, typed exceptions, FluentValidation, JWT, Scalar/OpenAPI, Serilog, pt-BR culture, mandatory security baseline) |
+| `dotnet-orm-efcore` | writing/reviewing **write-side** data access with EF Core — `DbContext` setup, Fluent API via `IEntityTypeConfiguration`, soft-delete query filters, `AsNoTracking`/explicit `Include`, migrations |
+| `dotnet-orm-dapper` | writing/reviewing **read-side** / reporting / financial exports / complex or high-performance SQL — scoped `IDbConnection`, parameterized raw SQL, multi-mapping, stored procedures, explicit transactions |
+| `dotnet-project-scaffold` | creating a new .NET solution/service from scratch — pattern `clean` (Clean Architecture + DDD, .NET 10 LTS) or `ntier` (N-Tier layered, .NET 8 LTS). Always use **LTS** framework/ORM versions |
+
+- To scaffold a new .NET project, prefer the **`/dotnet-new`** command (`/dotnet-new <nome> [--pattern clean|ntier] [--orm efcore|dapper|both] [--portal <nome>]`) — it loads `dotnet-project-scaffold`, pins the LTS version, shows the plan, and runs `dotnet build`.
+- These skills are the **source of truth** for .NET on this kit. If a request conflicts with them, surface the conflict — don't silently diverge.
 
 ### Database & Data
 - **Serverless PG**: Neon, Supabase
@@ -235,10 +251,10 @@ When reviewing backend code, verify:
 ## Quality Control Loop (MANDATORY)
 
 After editing any file:
-1. **Run validation**: `npm run lint && npx tsc --noEmit`
+1. **Run validation**: Node/Python → `npm run lint && npx tsc --noEmit` · .NET → `dotnet build` (warnings-as-errors when the project sets it)
 2. **Security check**: No hardcoded secrets, input validated
-3. **Type check**: No TypeScript/type errors
-4. **Test**: Critical paths have test coverage
+3. **Type check**: No TypeScript/type errors (.NET: build is clean)
+4. **Test**: Critical paths have test coverage (.NET → `dotnet test`)
 5. **Report complete**: Only after all checks pass
 
 ---
@@ -258,4 +274,4 @@ After editing any file:
 
 ---
 
-> **Note:** This agent loads relevant skills for detailed guidance. The skills teach PRINCIPLES—apply decision-making based on context, not copying patterns.
+> **Note:** This agent loads relevant skills for detailed guidance. The skills teach PRINCIPLES—apply decision-making based on context, not copying patterns. For **.NET / C#** backends, the kit skills `dotnet-backend-standards`, `dotnet-orm-efcore`, `dotnet-orm-dapper` and `dotnet-project-scaffold` (plus the `/dotnet-new` command) are mandatory reading — load them before writing .NET code.

@@ -24,9 +24,12 @@ Bug fix trivial (typo, estilo, 1 arquivo, sem mudança de contrato/schema) pode 
 | **PLAN-\<slug\>** | *como*: tarefas, ordem, dependências | **execução** (o caminho) | `docs/02_Specs/` (linkado à SPEC) | `/plan <descrição>` |
 | **ADR-NNN** | *por que decidimos assim* | **decisão** durável c/ trade-offs | `docs/01_Architecture/` | `/adr <decisão>` |
 | **Migration-NNN.md** | *o quê mudou no banco* | **registro** da mudança de schema | `docs/02_Specs/Migrations/` | a partir do template |
+| **Module-\<nome\>.md** | *o que existe no módulo* (funcionalidades, entidades, regras) | **mapeamento** por módulo | `docs/02_Specs/Modules/` | um arquivo **por módulo** |
 | **Sprint log** | *o que foi feito / retro* | **diário** | `docs/03_Sprint_Logs/` | manual |
 
 > Regra de ouro contra duplicação: a **SPEC** descreve o destino em alto nível; o **PLAN** detalha o caminho. Não copie a quebra de tarefas para dentro da SPEC.
+
+> **Mapeamento sempre por módulo:** ao mapear funcionalidades/entidades, gere **um arquivo por módulo** em `02_Specs/Modules/` — **nunca** um único arquivo compilado. O resumo/índice vai para `.claude/context/*.md` (import `@`), não para o `CLAUDE.md`.
 
 ## Quando invocar cada agente
 
