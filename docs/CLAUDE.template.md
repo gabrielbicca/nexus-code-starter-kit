@@ -308,6 +308,7 @@ README.md              → Índice (mapa de conteúdo) — atualizar sempre
 01_Architecture/       → ADRs (decisões arquiteturais)
 02_Specs/              → Feature specs (.md), guias
 02_Specs/Migrations/   → Docs (.md) das migrations — SEM .sql (a fonte de verdade dos SQL é o repo)
+02_Specs/Modules/      → Mapeamento por módulo (.md) — UM arquivo por módulo, nunca um único compilado
 03_Sprint_Logs/        → Diários de sprint
 04_Assets/             → Imagens, diagramas exportados
 ```
@@ -323,6 +324,28 @@ README.md              → Índice (mapa de conteúdo) — atualizar sempre
 | ADR | Decisão |
 |---|---|
 | `<ADR-NNN>` | `<decisão>` |
+
+---
+
+## 🧩 Mapeamento & Documentação — Segregação por Módulo
+
+Estas regras valem para **qualquer mapeamento** do projeto — funcionalidades, entidades/tabelas, fluxos, permissões, regras de negócio ou snapshot do estado atual. Segui-las é obrigatório ao gerar ou atualizar documentação de mapeamento.
+
+### Regra 1 — Um arquivo por módulo (nunca um único arquivo compilado)
+
+- O mapeamento é **segregado por módulo/domínio**: **um** arquivo `.md` por módulo em `docs/02_Specs/Modules/` (padrão de nome: `Module-<nome>.md`).
+- Cada arquivo cobre as funcionalidades, entidades e regras **daquele** módulo — e só dele.
+- **Nunca** gere um único arquivo "compilado" com todos os módulos juntos (ex.: um `Funcionalidades.md` ou `Current-State-Snapshot.md` monolítico). Se o projeto tem 8 módulos, o mapeamento são 8 arquivos, não 1.
+- O `docs/README.md` (índice) lista **um link por módulo**.
+
+### Regra 2 — Conteúdo volumoso vai para `.claude/context/`, não para o `CLAUDE.md`
+
+- Resumos, índices e mapeamentos de acesso rápido vivem nos arquivos de `.claude/context/` (importados sob demanda via `@`) — **não** cole esse conteúdo dentro do `CLAUDE.md`. O `CLAUDE.md` é índice, não depósito; mantenha-o enxuto.
+- Roteie cada tipo para o arquivo de contexto certo:
+  - índice de SPECs/ADRs/tabelas/páginas/edge functions → `@.claude/context/specs-adrs-pages.md`
+  - regras de negócio por módulo → `@.claude/context/business-rules.md`
+  - resumo das migrations → `@.claude/context/migrations.md`
+- Ao criar um mapeamento novo, **registre a referência no arquivo de contexto correspondente** (e adicione o `@import` no CLAUDE.md apenas se for um arquivo de contexto novo). O detalhe fica em `docs/02_Specs/Modules/`; o contexto guarda o índice que aponta para lá.
 
 ---
 
@@ -480,3 +503,5 @@ Toda página do dashboard **deve** ter feedback visual durante carregamento.
 - **Nunca** expor UUIDs, codes ou dados internos em URLs do navegador — usar estado client-side para seleção
 - **Nunca** executar exclusão sem confirmação visual do usuário via modal
 - **Nunca** pular o `@orchestrator` em feature nova
+- **Nunca** gerar mapeamento (funcionalidades/entidades/regras) em um único arquivo compilado — sempre **um arquivo por módulo** em `docs/02_Specs/Modules/`
+- **Nunca** despejar mapeamentos/índices volumosos no `CLAUDE.md` — esse conteúdo vai para `.claude/context/*.md` (import `@`), mantendo o `CLAUDE.md` enxuto

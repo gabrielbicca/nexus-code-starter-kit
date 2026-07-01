@@ -1,9 +1,9 @@
 ---
 name: dotnet-project-scaffold
-description: Gerar a estrutura de um projeto backend .NET novo a partir de um de dois padrões — clean (Clean Architecture + DDD, .NET 10 LTS) ou wafx (N-Tier em camadas, padrão WAFX, .NET 8 LTS). Carregue ao criar um projeto/solução dotnet do zero, adicionar um novo serviço ou portal, ou decidir entre arquitetura limpa e N-Tier. O command /dotnet-new automatiza estes passos.
+description: Gerar a estrutura de um projeto backend .NET novo a partir de um de dois padrões — clean (Clean Architecture + DDD, .NET 10 LTS) ou ntier (N-Tier em camadas, .NET 8 LTS). Carregue ao criar um projeto/solução dotnet do zero, adicionar um novo serviço ou portal, ou decidir entre arquitetura limpa e N-Tier. O command /dotnet-new automatiza estes passos.
 ---
 
-# Scaffold de Projeto .NET (clean | wafx)
+# Scaffold de Projeto .NET (clean | ntier)
 
 > Cria a árvore de projetos, `.sln`, `.csproj` e arquivos mínimos (`Program.cs`/`Startup.cs`) de um
 > backend .NET seguindo um de dois padrões. **Sempre usa versões LTS** do framework e ORMs.
@@ -15,12 +15,12 @@ description: Gerar a estrutura de um projeto backend .NET novo a partir de um de
 Projeto novo, greenfield, regras de domínio ricas, API/microserviço?
   → pattern clean   (Clean Architecture + DDD, .NET 10 LTS)
 
-Encaixar numa solução padrão WAFX, MVC + WebAPI, múltiplos portais
-compartilhando backend, stored procedures, Telerik/SignalR?
-  → pattern wafx    (N-Tier em camadas, .NET 8 LTS)
+Encaixar numa solução N-Tier em camadas (MVC + WebAPI), múltiplos portais
+compartilhando backend, stored procedures, SignalR/componentes de UI de terceiros?
+  → pattern ntier   (N-Tier em camadas, .NET 8 LTS)
 ```
 
-| | **clean** | **wafx** |
+| | **clean** | **ntier** |
 |---|---|---|
 | Framework | .NET 10 (LTS) | .NET 8 (LTS) |
 | Arquitetura | Clean + DDD | N-Tier / Layered |
@@ -33,7 +33,7 @@ compartilhando backend, stored procedures, Telerik/SignalR?
 | Skills de apoio | [`dotnet-backend-standards`](../dotnet-backend-standards/SKILL.md), [`dotnet-orm-efcore`](../dotnet-orm-efcore/SKILL.md), [`dotnet-orm-dapper`](../dotnet-orm-dapper/SKILL.md) | as mesmas, adaptadas a N-Tier |
 
 > **Regra LTS:** nunca scaffolde em STS. .NET 8 e .NET 10 são LTS; .NET 9 é STS.
-> Para `clean`, prefira o LTS mais recente (.NET 10). Para `wafx`, alinhe ao LTS da solução-alvo
+> Para `clean`, prefira o LTS mais recente (.NET 10). Para `ntier`, alinhe ao LTS da solução-alvo
 > existente (tipicamente .NET 8). Os pacotes EF Core acompanham a major do framework.
 
 ---
@@ -75,7 +75,7 @@ Segue integralmente [`dotnet-backend-standards`](../dotnet-backend-standards/SKI
 
 ---
 
-## Padrão `wafx` — N-Tier em camadas (.NET 8 LTS, padrão WAFX)
+## Padrão `ntier` — N-Tier em camadas (.NET 8 LTS)
 
 Camadas com dependência linear; backend compartilhado por múltiplos portais web.
 
@@ -93,7 +93,7 @@ Camadas com dependência linear; backend compartilhado por múltiplos portais we
 Camadas: `WEB → BUSINESS → DATA → ENTITY` (+ `LANGUAGE` transversal). Portais adicionais
 (`<Nome>.<Portal>.WEB`) referenciam BUSINESS/DATA/ENTITY/LANGUAGE via `<ProjectReference>`.
 
-### Convenções (padrão WAFX)
+### Convenções (N-Tier)
 - Entidades: `tbl` + PascalCase (`tblExemplo`), PK `IDItem`, flags `byte` (0/1), FKs nullable.
 - DTO/Aux: `tblExemploAux : tblExemplo` em `Generic/`.
 - Serviço: par `IExemploBusiness : IDisposable` (em `IBusiness/`) + `ExemploBusiness` (em `Business/`), DI por construtor, métodos `Task<dynamic>`/`Task<List<dynamic>>`.
@@ -121,4 +121,4 @@ Camadas: `WEB → BUSINESS → DATA → ENTITY` (+ `LANGUAGE` transversal). Port
 - Scaffoldar em STS (.NET 9) → use LTS.
 - Referência de camada invertida no `clean` (Domain dependendo de outra camada) → Domain não referencia ninguém.
 - Instalar todo o EF + Dapper + Telerik "por padrão" → instale só os pacotes que o projeto usa.
-- Misturar `clean` e `wafx` no mesmo serviço → escolha um por solução.
+- Misturar `clean` e `ntier` no mesmo serviço → escolha um por solução.

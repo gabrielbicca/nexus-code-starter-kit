@@ -99,6 +99,7 @@ Exemplo de dívidas comuns:
   - `01_Architecture/` — para os ADRs retroativos
   - `02_Specs/` — para as SPECs retroativas + guias
   - `02_Specs/Migrations/` — para docs das migrations existentes
+  - `02_Specs/Modules/` — para o mapeamento por módulo (um arquivo por módulo — ver Fase 3.2)
   - `03_Sprint_Logs/` — em branco; começará a ser preenchida a partir da primeira sprint pós-migração
   - `04_Assets/` — imagens, diagramas
 - [ ] Copiar templates em `docs/00_Meta/`:
@@ -145,15 +146,19 @@ Para cada **decisão arquitetural importante** que já foi tomada e está viva n
 
 > Os ADRs retroativos **não precisam ser perfeitos**. Podem ser curtos. O importante é registrar: contexto, decisão, consequências. Marque com status `accepted-retroactive` para deixar claro que foram escritos depois.
 
-### 3.2 SPECs retroativas (opcional mas recomendado)
+### 3.2 Mapeamento por módulo (segregado — NUNCA um arquivo único)
 
-Não é necessário criar SPEC para cada feature já existente — isso pode ser trabalho de meses. Foque em:
+O mapeamento das funcionalidades do projeto é **segregado por módulo/domínio**: **um arquivo `.md` por módulo** em `docs/02_Specs/Modules/`, seguindo o padrão da documentação. **Nunca** gere um único arquivo compilado com todos os módulos juntos (nada de um `Funcionalidades.md` ou `Current-State-Snapshot.md` monolítico).
 
-- [ ] `SPEC-001-Current-State-Snapshot.md` — visão geral do que já está implementado, por módulo
+- [ ] Identificar os módulos/domínios do projeto (ex.: `auth`, `billing`, `catalog`, `orders`…)
+- [ ] Para **cada** módulo, criar `docs/02_Specs/Modules/Module-<nome>.md` mapeando: funcionalidades, entidades/tabelas e regras **daquele** módulo — e só dele
+- [ ] Adicionar ao `docs/README.md` **um link por módulo** (não um único item "mapeamento")
 - [ ] SPECs para **módulos críticos** que vão receber manutenção em breve
 - [ ] SPECs para as **dívidas técnicas identificadas na Fase 1** (uma SPEC por item a regularizar)
 
-> A regra é: só documente retroativamente o que você vai **mexer ou precisar entender em profundidade**. O resto pode ficar no `Project-Scope.md` como descrição geral.
+> **Roteamento de contexto (importante):** o **resumo/índice** desse mapeamento vai para os arquivos de `.claude/context/` — regras de negócio por módulo em `business-rules.md`, tabelas/páginas/SPECs em `specs-adrs-pages.md`. **Não** cole esse conteúdo no `CLAUDE.md`: ele apenas importa esses arquivos via `@` e deve permanecer enxuto. O detalhe fica em `docs/02_Specs/Modules/`; o contexto guarda o índice que aponta para lá.
+
+> A regra é: só documente retroativamente em profundidade o que você vai **mexer ou precisar entender**. O resto pode ficar no `Project-Scope.md` como descrição geral — mas o mapeamento, quando feito, é sempre por módulo.
 
 ### 3.3 Docs das migrations existentes
 
@@ -206,6 +211,8 @@ Não é necessário criar SPEC para cada feature já existente — isso pode ser
 - **Nunca** commitar `.env.local` ou chaves que por acaso estejam no working dir
 - **Nunca** pular a Fase 1 (Discovery) — ir direto para código é o erro mais comum
 - **Nunca** prometer regularizar todas as dívidas "na próxima sprint" — documente, priorize, e trate como backlog
+- **Nunca** gerar o mapeamento de funcionalidades num único arquivo compilado — é **um arquivo por módulo** em `02_Specs/Modules/`
+- **Nunca** despejar o mapeamento/índice no `CLAUDE.md` — o resumo vai para `.claude/context/*.md`; o detalhe, para `docs/02_Specs/Modules/`
 
 ---
 
@@ -224,9 +231,11 @@ Fase 2 — Scaffold
 
 Fase 3 — Reverse-Doc
   [ ] ADRs retroativos (decisões críticas)
+  [ ] Mapeamento por módulo (um arquivo por módulo em 02_Specs/Modules/ — nunca um único)
+  [ ] Resumo/índice roteado para .claude/context/ (não para o CLAUDE.md)
   [ ] SPECs retroativas (módulos críticos + dívidas)
   [ ] Docs das migrations existentes
-  [ ] MOC atualizado
+  [ ] Índice do docs/ atualizado (um link por módulo)
 
 Fase 4 — Validation
   [ ] Build, lint, testes passando

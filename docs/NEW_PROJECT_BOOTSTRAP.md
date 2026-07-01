@@ -32,6 +32,7 @@ Tudo vive **dentro do repositório** — a base de conhecimento (`docs/`) é ver
    📁 01_Architecture/    → ADRs e diagramas
    📁 02_Specs/           → Feature specs (.md) + guias (Deploy-Guide, Project-Scope)
       📁 Migrations/      → Docs .md das migrations (SEM .sql — fonte no repo)
+      📁 Modules/         → Mapeamento por módulo (UM arquivo por módulo — nunca um único compilado)
    📁 03_Sprint_Logs/     → Diários de sprint e retrospectivas
    📁 04_Assets/          → Imagens, diagramas exportados
 📁 supabase/migrations/   → Arquivos .sql oficiais (fonte de verdade) — ou equivalente do stack
@@ -205,6 +206,8 @@ Ao criar a base de conhecimento de um novo projeto, garantir os templates em `do
 - Nunca criar listagem sem paginação server-side (`.range()` + `count: 'exact'`)
 - Nunca usar `confirm()` ou `<input type="date">` nativos — usar componentes do design system
 - Nunca pular o `@orchestrator` em feature nova
+- Nunca gerar mapeamento de funcionalidades/entidades num único arquivo compilado — é **um arquivo por módulo** em `docs/02_Specs/Modules/`
+- Nunca despejar mapeamentos/índices no `CLAUDE.md` — esse conteúdo vive em `.claude/context/*.md` (import `@`)
 
 ---
 
