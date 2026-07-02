@@ -49,8 +49,10 @@ $ARGUMENTS
 
 Próximos passos:
 - Preencher objetivo, escopo e design técnico
+- Preencher o Plano de testes: toda funcionalidade mapeada em teste (regra do kit)
 - Se houver decisão arquitetural → /adr
 - Implementar seguindo a ordem do docs/00_Meta/AGENT_FLOW.md
+- Antes de concluir: Gate de qualidade — testes implementados + review do @security-auditor (obrigatórios)
 ```
 
 ---

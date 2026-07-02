@@ -119,9 +119,13 @@ OBRIGATÓRIO — sem exceções. A documentação vem PRIMEIRO, o código vem DE
 3. Types + Schema + Service               → código backend
 4. Testes de integração                   → validar RLS e lógica
 5. Frontend                               → página + componentes + actions + i18n
-6. Atualizar docs/                        → checkboxes, status, índice
-7. Atualizar CLAUDE.md                    → regras, tabelas, migrations
+6. Testes (camada de testes) 🔴           → @test-engineer: TODA funcionalidade mapeada em teste (obrigatório)
+7. Review de segurança 🔴                 → @security-auditor revisa tudo (obrigatório)
+8. Atualizar docs/                        → checkboxes, status, Gate de qualidade, índice
+9. Atualizar CLAUDE.md                    → regras, tabelas, migrations
 ```
+
+> 🔴 **Gate de qualidade (regra do kit):** os passos 6 e 7 são **obrigatórios em todo desenvolvimento novo** — nenhuma funcionalidade fica sem teste na camada de testes e nenhuma feature é concluída sem o review do `@security-auditor`. O `spec_drift.py` falha se uma SPEC virar `concluída` sem isso.
 
 ---
 
@@ -503,5 +507,7 @@ Toda página do dashboard **deve** ter feedback visual durante carregamento.
 - **Nunca** expor UUIDs, codes ou dados internos em URLs do navegador — usar estado client-side para seleção
 - **Nunca** executar exclusão sem confirmação visual do usuário via modal
 - **Nunca** pular o `@orchestrator` em feature nova
+- **Nunca** concluir desenvolvimento novo sem testes na camada de testes — **toda funcionalidade mapeada em teste** (`@test-engineer`)
+- **Nunca** concluir desenvolvimento novo sem o review do `@security-auditor` (Gate de qualidade do kit)
 - **Nunca** gerar mapeamento (funcionalidades/entidades/regras) em um único arquivo compilado — sempre **um arquivo por módulo** em `docs/02_Specs/Modules/`
 - **Nunca** despejar mapeamentos/índices volumosos no `CLAUDE.md` — esse conteúdo vai para `.claude/context/*.md` (import `@`), mantendo o `CLAUDE.md` enxuto

@@ -3,7 +3,7 @@
 > **Uma “caixa de ferramentas” pronta para o Claude Code.**
 > Você instala em segundos e o seu assistente de programação ganha uma **equipe inteira de especialistas**, **atalhos de comando** e **manuais de boas práticas** — tudo organizado dentro do seu projeto.
 
-**Versão:** 1.7.0 · **Licença:** MIT · **Autor:** gabrielbicca
+**Versão:** 1.10.0 · **Licença:** MIT · **Autor:** gabrielbicca
 
 ---
 
@@ -15,8 +15,8 @@
 4. [Como instalar (3 passos)](#4-como-instalar-3-passos)
 5. [Os 4 pilares do kit](#5-os-4-pilares-do-kit)
 6. [Os 21 Agentes — sua equipe de especialistas](#6-os-21-agentes--sua-equipe-de-especialistas)
-7. [Os 14 Comandos — atalhos do dia a dia](#7-os-14-comandos--atalhos-do-dia-a-dia)
-8. [As 38 Skills — a biblioteca de conhecimento](#8-as-38-skills--a-biblioteca-de-conhecimento)
+7. [Os 15 Comandos — atalhos do dia a dia](#7-os-15-comandos--atalhos-do-dia-a-dia)
+8. [As 42 Skills — a biblioteca de conhecimento](#8-as-42-skills--a-biblioteca-de-conhecimento)
 9. [A base de conhecimento (`docs/`) — o “cérebro” do projeto](#9-a-base-de-conhecimento-docs--o-cérebro-do-projeto)
 10. [Contexto e scripts de verificação](#10-contexto-e-scripts-de-verificação)
 11. [Um dia de trabalho usando o kit](#11-um-dia-de-trabalho-usando-o-kit)
@@ -28,7 +28,7 @@
 
 ## 1. O que é, em uma frase
 
-O **Nexus Code Starter Kit** é um pacote que turbina o **Claude Code** (o programador de inteligência artificial da Anthropic) com **21 especialistas virtuais**, **14 comandos rápidos**, **38 manuais de boas práticas** e uma **estrutura de documentação organizada com validação automática** — instalado dentro de qualquer projeto com **um único comando**.
+O **Nexus Code Starter Kit** é um pacote que turbina o **Claude Code** (o programador de inteligência artificial da Anthropic) com **21 especialistas virtuais**, **15 comandos rápidos**, **42 manuais de boas práticas**, uma **estrutura de documentação organizada com validação automática** e um **gate de qualidade obrigatório** (testes + segurança) — instalado dentro de qualquer projeto com **um único comando**.
 
 ---
 
@@ -86,8 +86,8 @@ O kit cria a pasta `.claude/` (com agentes, comandos e skills) e a pasta `docs/`
 ```
 .claude/
 ├── agents/      → 21 especialistas
-├── commands/    → 14 atalhos de comando
-├── skills/      → 38 manuais de conhecimento
+├── commands/    → 15 atalhos de comando
+├── skills/      → 42 manuais de conhecimento
 ├── scripts/     → verificadores automáticos
 └── context/     → blocos de contexto reutilizáveis
 
@@ -104,7 +104,7 @@ CLAUDE.md        → o “manual do projeto” para a IA (opcional)
 │                  NEXUS CODE STARTER KIT                      │
 ├──────────────┬──────────────┬──────────────┬───────────────┤
 │  🧑‍💻 AGENTES  │  ⚡ COMANDOS  │  📚 SKILLS    │  🗂️ DOCS       │
-│  21 espe-    │  14 atalhos  │  38 manuais  │  base de       │
+│  21 espe-    │  15 atalhos  │  42 manuais  │  base de       │
 │  cialistas   │  rápidos     │  de boas     │  conhecimento  │
 │  virtuais    │              │  práticas    │  spec-driven   │
 └──────────────┴──────────────┴──────────────┴───────────────┘
@@ -174,7 +174,7 @@ Pense em cada agente como **um funcionário sênior** com uma especialidade. Voc
 
 ---
 
-## 7. Os 14 Comandos — atalhos do dia a dia
+## 7. Os 15 Comandos — atalhos do dia a dia
 
 Comandos começam com `/`. São **botões prontos** para tarefas comuns — você não precisa explicar o passo a passo.
 
@@ -194,10 +194,11 @@ Comandos começam com `/`. São **botões prontos** para tarefas comuns — voc�
 | `/preview` | **Liga/desliga o servidor local** para você ver o projeto rodando. |
 | `/status` | Mostra o **painel de status** do projeto e dos agentes. |
 | `/ui-ux-pro-max` | **Inteligência de design**: 50+ estilos visuais, 95+ paletas de cores e geração de design system. |
+| `/dotnet-new` | **Gera um projeto backend .NET** do zero (Clean Architecture + DDD ou N-Tier, sempre versões LTS). |
 
 ---
 
-## 8. As 38 Skills — a biblioteca de conhecimento
+## 8. As 42 Skills — a biblioteca de conhecimento
 
 As **skills** são **manuais de boas práticas** que os agentes consultam automaticamente. Você raramente precisa chamá-las — elas garantem que a IA **siga o padrão certo** em vez de improvisar. Estão agrupadas por tema abaixo.
 
@@ -217,6 +218,10 @@ As **skills** são **manuais de boas práticas** que os agentes consultam automa
 - **nodejs-best-practices** — boas práticas de Node.js.
 - **python-patterns** — boas práticas de Python.
 - **rust-pro** — Rust moderno, async e sistemas de alto desempenho.
+- **dotnet-backend-standards** — padrão de backend .NET do kit (Clean Architecture + DDD, segurança, pt-BR).
+- **dotnet-orm-efcore** — convenções de Entity Framework Core (escritas, migrations).
+- **dotnet-orm-dapper** — convenções de Dapper (leituras complexas, relatórios, SQL de alta performance).
+- **dotnet-project-scaffold** — estrutura de projeto .NET novo (Clean Architecture ou N-Tier, versões LTS).
 
 ### 🎨 Front-end e design
 - **frontend-design** — pensamento de design para telas web.
@@ -289,7 +294,7 @@ São **blocos de contexto reutilizáveis** que o arquivo `CLAUDE.md` (o manual d
 Pequenos programas que **checam a saúde do projeto** automaticamente:
 
 - **`checklist.py`** — roda uma bateria de verificações de qualidade (rápido, no dia a dia).
-- **`spec_drift.py`** — confere se documentação, banco e código estão **coerentes entre si**. Vai além de “links quebrados”: verifica se toda mudança de banco aponta para uma spec, se uma spec marcada como *concluída* tem **todos** os critérios cumpridos, e se a spec aponta para o código que a implementa.
+- **`spec_drift.py`** — confere se documentação, banco e código estão **coerentes entre si**. Vai além de “links quebrados”: verifica se toda mudança de banco aponta para uma spec, se uma spec marcada como *concluída* tem **todos** os critérios cumpridos, se a spec aponta para o código que a implementa **e se o Gate de qualidade do kit foi cumprido** (testes implementados + review de segurança — ver abaixo).
 - **`verify_all.py`** — verificação geral antes de publicar (a checagem spec-driven roda primeiro).
 - **`auto_preview.py`** — liga o preview automático.
 - **`session_manager.py`** — gerencia a sessão de trabalho.
@@ -297,6 +302,15 @@ Pequenos programas que **checam a saúde do projeto** automaticamente:
 ### 🛡️ Validação automática (opcional)
 
 Na instalação, o kit oferece ligar um **“guarda automático”**: antes de cada salvamento no histórico (commit) e a cada envio no GitHub, ele roda a checagem spec-driven sozinho. Assim a regra *“documentação antes do código”* deixa de depender de alguém lembrar — vira parte da esteira. O comando **`/verify`** é o atalho para rodar isso quando quiser.
+
+### 🔴 Gate de qualidade — regra obrigatória do kit
+
+**Todo desenvolvimento novo** só é considerado concluído quando cumprir duas exigências, sem exceção:
+
+1. **Testes implementados na camada de testes** — *toda funcionalidade da feature precisa estar mapeada em pelo menos um teste* (o `@test-engineer` implementa; E2E com o `@qa-automation-engineer`). Nenhuma funcionalidade fica sem teste.
+2. **Review de segurança executado** — o `@security-auditor` revisa a implementação de toda feature nova (não só quando mexe em login), e os apontamentos são tratados.
+
+Isso não é recomendação, é **regra verificável**: a SPEC tem uma seção “Gate de qualidade” com esses dois itens, e o `spec_drift.py` **acusa erro** se uma spec for marcada como concluída sem eles — inclusive no commit e no CI, se o guarda automático estiver ligado.
 
 ---
 
@@ -318,6 +332,10 @@ Veja como tudo se conecta na prática. Suponha que você queira **adicionar um s
 ```
 
 Cada especialista consulta as **skills** relevantes automaticamente, e tudo que foi decidido fica registrado em **`docs/`**. Você acompanha pelo `/status`.
+
+> 🔴 Repare nos passos do `@security-auditor` e do `@test-engineer`: eles **não são opcionais**. Pelo Gate de qualidade do kit, toda feature nova termina com os testes implementados (cada funcionalidade mapeada em teste) e com o review de segurança executado — o `/verify` cobra isso.
+
+> 📋 **Acompanhe cada etapa — não espere o final.** A cada passo do fluxo, confira se ele está sendo seguido de forma correta: use o `/status` para ver onde o trabalho está, rode o `/verify` ao fim de cada etapa (não só antes do deploy) e confirme na SPEC que os checkboxes correspondentes foram marcados. Se uma etapa foi pulada (ex.: implementou sem SPEC, concluiu sem testes), pare e corrija **antes** de seguir — é muito mais barato ajustar no meio do caminho do que descobrir no final.
 
 > O mais importante: você **não precisa saber programar** para reger essa orquestra. Você descreve o que quer, e a equipe de IA executa seguindo padrões profissionais.
 

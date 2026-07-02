@@ -44,6 +44,8 @@ Roda os validadores do kit e te entrega um relatório claro. Há dois níveis:
 
 5. **Se houver falhas spec-driven**, oriente: criar a SPEC faltante (`/spec`), documentar a migration, marcar os critérios de aceite, ou preencher a rastreabilidade na SPEC.
 
+6. **Se a falha for do Gate de qualidade** (regra do kit): a SPEC foi marcada `concluída` sem testes ou sem review de segurança. Oriente a rodar `@test-engineer` (implementar os testes que mapeiam toda funcionalidade da SPEC) e `@security-auditor` (review), e só então marcar os checkboxes do Gate.
+
 ---
 
 ## Uso

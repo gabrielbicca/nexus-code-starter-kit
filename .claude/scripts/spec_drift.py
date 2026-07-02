@@ -15,9 +15,15 @@ Valida, no projeto-alvo, que a documentação spec-driven está coerente:
   5. SPEC `concluída` tem TODOS os critérios de aceite marcados ([x])
   6. SPEC `em-progresso`/`concluída` tem "Arquivos de código" preenchido (elo SPEC↔código)
 
+  GATE DE QUALIDADE (regra do kit: testes + segurança obrigatórios)
+  7. SPEC `concluída` tem TODOS os itens do "Plano de testes" marcados
+     (toda funcionalidade mapeada em teste na camada de testes)
+  8. SPEC `concluída` tem o "Gate de qualidade" marcado
+     (testes implementados + review do @security-auditor executado)
+
 Tolerante a stacks variados: se docs/ ou migrations não existem, não falha.
 Falha (exit 1) em drift REAL: migration sem doc, referência quebrada,
-spec concluída com critério pendente.
+spec concluída com critério pendente, teste pendente ou gate de qualidade aberto.
 Avisos (numeração, índice, rastreabilidade, migration sem SPEC) não derrubam o exit code.
 
 Uso:
@@ -198,8 +204,22 @@ def check_migration_docs_reference_spec(root):
         ok(f"Todas as {len(docs)} migration(s) documentadas referenciam uma SPEC.")
 
 
+def section_boxes(text, title_pattern):
+    """Conta checkboxes de uma seção "## <título>...". Retorna (total, pendentes)
+    ou (None, None) se a seção não existe no arquivo (template antigo)."""
+    sec = re.search(r"(?is)" + title_pattern + r"(.*?)(?:\n##\s|\Z)", text)
+    if not sec:
+        return None, None
+    total = pend = 0
+    for box in re.finditer(r"^\s*[-*]\s*\[( |x|X)\]", sec.group(1), re.MULTILINE):
+        total += 1
+        if box.group(1) == " ":
+            pend += 1
+    return total, pend
+
+
 def parse_spec(text):
-    """Extrai (status, total_criterios, criterios_pendentes, codigo_preenchido)."""
+    """Extrai status, critérios de aceite, plano de testes, gate e rastreabilidade."""
     # Status: célula da tabela "| Status | <valor> |"
     status = ""
     m = re.search(r"\|\s*Status\s*\|\s*`?([^|`]+?)`?\s*\|", text, re.IGNORECASE)
@@ -207,14 +227,13 @@ def parse_spec(text):
         status = strip_accents(m.group(1).strip().lower())
 
     # Critérios de aceite: checkboxes na seção "Critérios de aceite"
-    total = pend = 0
-    sec = re.search(r"(?is)crit[ée]rios de aceite(.*?)(?:\n##\s|\Z)", text)
-    if sec:
-        block = sec.group(1)
-        for box in re.finditer(r"^\s*[-*]\s*\[( |x|X)\]", block, re.MULTILINE):
-            total += 1
-            if box.group(1) == " ":
-                pend += 1
+    total, pend = section_boxes(text, r"crit[ée]rios de aceite")
+    total = total or 0
+    pend = pend or 0
+
+    # Gate de qualidade do kit: testes obrigatórios + review de segurança
+    tests_total, tests_pend = section_boxes(text, r"plano de testes")
+    gate_total, gate_pend = section_boxes(text, r"gate de qualidade")
 
     # "Arquivos de código" preenchido? (linha da tabela de rastreabilidade)
     code_filled = None  # None = campo não encontrado no arquivo
@@ -224,7 +243,7 @@ def parse_spec(text):
         val_clean = val.strip("`<> ")
         code_filled = bool(val_clean) and not any(p in val for p in PLACEHOLDER_MARKS)
 
-    return status, total, pend, code_filled
+    return status, total, pend, code_filled, tests_total, tests_pend, gate_total, gate_pend
 
 
 def check_spec_conformance(root, specs):
@@ -243,7 +262,7 @@ def check_spec_conformance(root, specs):
             text = f.read_text(encoding="utf-8", errors="ignore")
         except Exception:
             continue
-        status, total, pend, code_filled = parse_spec(text)
+        status, total, pend, code_filled, tests_total, tests_pend, gate_total, gate_pend = parse_spec(text)
         bucket = status if status in ("rascunho", "em-progresso", "concluida", "arquivada") else "outro"
         # normaliza "em progresso" / "em-progresso"
         if "progress" in status:
@@ -262,6 +281,22 @@ def check_spec_conformance(root, specs):
         if bucket == "concluida" and pend > 0:
             err(f"{f.name}: status 'concluída' mas {pend}/{total} critério(s) de aceite ainda pendente(s).")
             continue
+
+        # Regras 7 e 8 — Gate de qualidade do kit (testes + segurança obrigatórios)
+        if bucket == "concluida":
+            gate_ok = True
+            if tests_total is None:
+                warn(f"{f.name}: sem seção 'Plano de testes' — regra do kit: toda funcionalidade mapeada em teste.")
+            elif tests_pend and tests_pend > 0:
+                err(f"{f.name}: status 'concluída' mas {tests_pend}/{tests_total} item(ns) do Plano de testes pendente(s) — regra do kit: testes obrigatórios na camada de testes.")
+                gate_ok = False
+            if gate_total is None:
+                warn(f"{f.name}: sem seção 'Gate de qualidade' (template antigo?) — regra do kit: testes implementados + review do @security-auditor são obrigatórios.")
+            elif gate_pend and gate_pend > 0:
+                err(f"{f.name}: status 'concluída' mas Gate de qualidade aberto ({gate_pend}/{gate_total}) — testes implementados e review do @security-auditor são obrigatórios.")
+                gate_ok = False
+            if not gate_ok:
+                continue
 
         # Regra 6: ativa sem rastreabilidade de código = aviso
         if active and code_filled is False:

@@ -436,7 +436,12 @@ Para qualquer **feature nova**, siga o fluxo (detalhado em \`docs/00_Meta/AGENT_
 2. \`/plan <descrição>\` → cria o **PLAN** (a quebra de tarefas, linkada à SPEC)
 3. \`/adr <decisão>\` → registra decisões arquiteturais (quando houver)
 4. \`@orchestrator\` → implementa seguindo a SPEC/PLAN (ele **exige** a SPEC antes de codar)
-5. \`/verify\` → valida tudo (inclui a checagem spec-driven) antes de concluir
+5. \`@test-engineer\` → **obrigatório**: implementa os testes na camada de testes — **toda funcionalidade mapeada em teste**
+6. \`@security-auditor\` → **obrigatório**: review de segurança de todo desenvolvimento novo
+7. \`/verify\` → valida tudo (inclui a checagem spec-driven) antes de concluir
+
+> 🔴 **Gate de qualidade (regra do kit):** nenhum desenvolvimento novo é concluído sem os passos 5 e 6.
+> O \`spec_drift.py\` falha se uma SPEC virar \`concluída\` com o Plano de testes pendente ou o Gate aberto.
 
 Bug fixes simples (typo, estilo, ajuste isolado de 1 arquivo) podem pular a SPEC e o \`@orchestrator\`.
 
@@ -457,6 +462,8 @@ Bug fixes simples (typo, estilo, ajuste isolado de 1 arquivo) podem pular a SPEC
 - **NUNCA** alterar schema do banco sem migration documentada
 - **NUNCA** commitar credenciais ou secrets
 - **NUNCA** modificar dados de produção sem aprovação explícita
+- **NUNCA** concluir desenvolvimento novo sem testes na camada de testes (toda funcionalidade mapeada em teste)
+- **NUNCA** concluir desenvolvimento novo sem o review do \`@security-auditor\`
 
 ---
 
