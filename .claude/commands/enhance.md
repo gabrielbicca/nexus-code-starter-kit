@@ -36,9 +36,13 @@ This command adds features or makes updates to existing application.
 4. **Apply**
    - Call relevant agents
    - Make changes
-   - Test
 
-5. **Update Preview**
+5. **Quality Gate (🔴 MANDATORY — kit rule, never skip)**
+   - `test-engineer` → implement tests in the test layer for **every new/changed functionality** (all features mapped to tests)
+   - `security-auditor` → security review of the changes; address findings before finishing
+   - Mark the SPEC's **Gate de qualidade** checkboxes — `spec_drift.py` fails a `concluída` SPEC without them
+
+6. **Update Preview**
    - Hot reload or restart
 
 ---

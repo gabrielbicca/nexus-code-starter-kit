@@ -1,6 +1,6 @@
 {
   "name": "nexus-code-starter-kit",
-  "version": "1.9.0",
+  "version": "1.10.0",
   "description": "Kit de agentes, skills e commands para o Claude Code. Instala a estrutura padrão em projetos novos ou existentes.",
   "scripts": {
     "test": "node scripts/check-drift.js",

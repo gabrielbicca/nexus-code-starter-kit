@@ -9,10 +9,21 @@
 2. /plan  → PLAN-<slug>  COMO: quebra de tarefas, dependências    (docs/02_Specs/, linkado à SPEC)
 3. /adr   → ADR-NNN      decisões arquiteturais (quando houver)    (docs/01_Architecture/)
 4. @orchestrator         implementa seguindo a SPEC/PLAN, acionando os especialistas
-5. /verify               valida tudo (inclui a checagem spec-driven) antes de concluir
+5. @test-engineer        implementa os testes — TODA funcionalidade mapeada em teste  🔴 obrigatório
+6. @security-auditor     review de segurança da implementação                          🔴 obrigatório
+7. /verify               valida tudo (inclui a checagem spec-driven) antes de concluir
 ```
 
-> Ao fim: atualize o `Status` da SPEC, marque os critérios de aceite `[x]` e preencha a **Rastreabilidade → Arquivos de código**.
+> Ao fim: atualize o `Status` da SPEC, marque os critérios de aceite `[x]`, marque o **Gate de qualidade** e preencha a **Rastreabilidade → Arquivos de código**.
+
+## 🔴 Gate de qualidade — regra obrigatória do kit
+
+**Todo desenvolvimento novo** só está concluído quando:
+
+1. **Testes implementados na camada de testes** — toda funcionalidade da SPEC mapeada em pelo menos um teste (`@test-engineer`; E2E com `@qa-automation-engineer`). Nenhuma funcionalidade fica sem teste.
+2. **Review de segurança executado** — `@security-auditor` revisou a implementação e os apontamentos foram tratados.
+
+Isso não é convenção: o `spec_drift.py` **falha** (erro, exit 1) se uma SPEC for marcada `concluída` com o Plano de testes pendente ou o Gate de qualidade aberto — e o gate roda no pre-commit e no CI, se instalados.
 
 Bug fix trivial (typo, estilo, 1 arquivo, sem mudança de contrato/schema) pode pular o `@orchestrator` e a SPEC.
 
@@ -40,9 +51,9 @@ Bug fix trivial (typo, estilo, 1 arquivo, sem mudança de contrato/schema) pode 
 | Schema / migrations (RLS se Postgres/Supabase) | `@database-architect` |
 | API / services / actions | `@backend-specialist` |
 | UI / componentes | `@frontend-specialist` |
-| Testes unit/integração | `@test-engineer` |
+| Testes unit/integração (🔴 obrigatório em todo desenvolvimento novo) | `@test-engineer` |
 | E2E | `@qa-automation-engineer` |
-| Review de segurança | `@security-auditor` |
+| Review de segurança (🔴 obrigatório em todo desenvolvimento novo) | `@security-auditor` |
 | Bug / root-cause | `@debugger` |
 | Mapear codebase | `@explorer-agent` |
 

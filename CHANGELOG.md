@@ -6,6 +6,25 @@ Formato baseado em [Keep a Changelog](https://keepachangelog.com/pt-BR/1.0.0/).
 
 ---
 
+## [1.10.0] — 2026-07-02
+
+> Tema: **Gate de qualidade obrigatório** — todo desenvolvimento novo passa a exigir, como regra do kit: (1) testes implementados na camada de testes com **toda funcionalidade mapeada em teste** e (2) **review do `@security-auditor`**. A regra é verificável, não só por convenção.
+
+### Adicionado
+- **Seção "Gate de qualidade (obrigatório — regra do kit)"** no `Feature-Spec-Template.md` — dois checkboxes bloqueantes por SPEC: *testes implementados* (todas as funcionalidades mapeadas em testes) e *review de segurança executado*. Seções seguintes renumeradas (Agentes → 8, Rastreabilidade → 9, Notas → 10).
+- **Regras 7 e 8 no `spec_drift.py`** — SPEC `concluída` com item pendente no **Plano de testes** ou com o **Gate de qualidade** aberto agora é **erro** (exit 1), pegando também pre-commit e CI quando o gate spec-driven está instalado. SPECs antigas sem as seções geram aviso (não derrubam o build).
+- **CHECKPOINT 3 (Quality Gate) no `@orchestrator`** — `test-engineer` e `security-auditor` passam a ser presença obrigatória em toda orquestração de desenvolvimento novo; encerrar sem os dois = orquestração falha. Step 2/3, Best Practices e Checkpoint Summary atualizados no mesmo sentido (o security review deixa de ser "if applicable").
+- **Bloco "Gate de qualidade — regra obrigatória do kit"** no `AGENT_FLOW.md` — o caminho feliz spec-driven ganha os passos explícitos `@test-engineer` (5) e `@security-auditor` (6) antes do `/verify`.
+
+### Alterado
+- **`Feature-Spec-Template.md` — "Plano de testes" agora é "(obrigatório)"** — toda funcionalidade/critério de aceite precisa estar mapeado em pelo menos um teste; cada item indica qual critério cobre.
+- **`bin/cli.js` (CLAUDE.md gerado)** — o Protocolo Obrigatório ganhou os passos 5 (`@test-engineer`) e 6 (`@security-auditor`) + nota do Gate; Proibições Absolutas ganharam "nunca concluir sem testes" e "nunca concluir sem review de segurança".
+- **`docs/CLAUDE.template.md`** — "Ordem obrigatória para toda feature nova" ganhou os passos de testes (6) e review de segurança (7), ambos marcados como obrigatórios, + duas proibições novas.
+- **Commands `/create` e `/enhance`** — ganharam a etapa "Quality Gate (MANDATORY)" antes do preview; `/spec` orienta o gate nos próximos passos; `/verify` explica como agir quando a falha é do Gate.
+- **`README.md` e `APRESENTACAO.md`** — documentam o Gate de qualidade como regra verificável do kit.
+
+---
+
 ## [1.9.0] — 2026-07-01
 
 > Tema: **mapeamento de funcionalidades sempre por módulo e roteado para o contexto certo** — corrige dois vícios observados em uso real: o kit gerava um único arquivo compilado de funcionalidades e despejava o mapeamento no `CLAUDE.md`, poluindo-o.

@@ -62,6 +62,7 @@ O kit não só **pede** specs — ele **verifica** que o projeto continua coeren
 
 - **Referencial** — toda migration `.sql` tem doc; referências `SPEC-NNN`/`ADR-NNN` no código existem; o índice `docs/README.md` está atualizado.
 - **Conformidade** — toda migration documentada cita uma `SPEC`; uma SPEC `concluída` tem **todos** os critérios de aceite marcados; SPECs ativas têm a rastreabilidade de código preenchida.
+- **Gate de qualidade (regra do kit)** — todo desenvolvimento novo **tem testes implementados na camada de testes** (toda funcionalidade mapeada em teste, via `@test-engineer`) e **passa pelo review do `@security-auditor`**. SPEC `concluída` com o Plano de testes pendente ou o Gate de qualidade aberto é **erro** (exit 1).
 
 Três formas de rodar (use o command **`/verify`** para o caminho fácil):
 

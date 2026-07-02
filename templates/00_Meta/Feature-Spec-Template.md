@@ -69,19 +69,28 @@
 
 </details>
 
-## 6. Plano de testes
+## 6. Plano de testes (obrigatório)
 
-> Ligue cada item, quando possível, a um critério de aceite da seção 2.
+> **Regra do kit:** todo desenvolvimento novo tem testes implementados na camada de testes — **toda funcionalidade/critério de aceite da seção 2 precisa estar mapeado em pelo menos um teste**. Ligue cada item a um critério da seção 2. A SPEC **não** pode virar `concluída` com itens pendentes aqui (o `spec_drift.py` acusa erro).
 
-- [ ] Unit: <o quê>
-- [ ] Integração: <o quê> (ex.: autorização / isolamento de dados)
-- [ ] E2E (fluxo crítico): <o quê>
+- [ ] Unit: <o quê> — cobre critério(s) <n>
+- [ ] Integração: <o quê> (ex.: autorização / isolamento de dados) — cobre critério(s) <n>
+- [ ] E2E (fluxo crítico): <o quê> — cobre critério(s) <n>
 
-## 7. Agentes envolvidos
+## 7. Gate de qualidade (obrigatório — regra do kit)
 
-<ex.: `@database-architect` (schema), `@backend-specialist` (services), `@frontend-specialist` (UI), `@security-auditor` (review), `@test-engineer` (testes)>
+> Estes dois itens são **bloqueantes**: o validador `spec_drift.py` acusa **erro** se a SPEC for marcada `concluída` sem eles marcados. Marque somente quando de fato executados.
 
-## 8. Rastreabilidade
+- [ ] **Testes implementados** — todas as funcionalidades desta SPEC estão mapeadas em testes na camada de testes (via `@test-engineer` e, para E2E, `@qa-automation-engineer`)
+- [ ] **Review de segurança executado** — `@security-auditor` revisou a implementação e os apontamentos foram tratados
+
+## 8. Agentes envolvidos
+
+<ex.: `@database-architect` (schema), `@backend-specialist` (services), `@frontend-specialist` (UI)>
+
+> Obrigatórios em **todo** desenvolvimento novo (regra do kit): `@test-engineer` (testes) e `@security-auditor` (review de segurança).
+
+## 9. Rastreabilidade
 
 > Preencha **Arquivos de código** assim que a implementação começar — é o elo SPEC↔código que o validador `spec_drift.py` espera ver numa SPEC `em-progresso`/`concluída`.
 
@@ -92,6 +101,6 @@
 | Migrations | `02_Specs/Migrations/Migration-NNN-*.md` |
 | Arquivos de código | `<caminhos principais — preencher durante a implementação>` |
 
-## 9. Notas / decisões em aberto
+## 10. Notas / decisões em aberto
 
 - <questões a resolver, suposições assumidas>

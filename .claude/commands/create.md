@@ -31,7 +31,12 @@ This command starts a new application creation process.
      - `backend-specialist` → API
      - `frontend-specialist` → UI
 
-4. **Preview**
+4. **Quality Gate (🔴 MANDATORY — kit rule, never skip)**
+   - `test-engineer` → implement tests in the test layer covering **every functionality built** (all features mapped to tests; E2E via `qa-automation-engineer` when applicable)
+   - `security-auditor` → security review of everything built; address findings before finishing
+   - Mark the SPEC's **Gate de qualidade** checkboxes — `spec_drift.py` fails a `concluída` SPEC without them
+
+5. **Preview**
    - Start with `auto_preview.py` when complete
    - Present URL to user
 
