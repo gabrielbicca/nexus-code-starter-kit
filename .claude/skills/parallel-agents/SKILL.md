@@ -1,7 +1,7 @@
 ---
 name: parallel-agents
-description: Multi-agent orchestration patterns. Use when multiple independent tasks can run with different domain expertise or when comprehensive analysis requires multiple perspectives.
-allowed-tools: Read, Glob, Grep
+description: Multi-agent orchestration patterns. Use when multiple independent tasks can run with different domain expertise, when comprehensive analysis requires multiple perspectives, or when parallel implementation streams need git worktree isolation.
+allowed-tools: Read, Glob, Grep, Bash
 ---
 
 # Native Parallel Agents
@@ -124,6 +124,41 @@ These work alongside the project's custom agents:
 | **general-purpose** | Complex multi-step modifications |
 
 Use **Explore** for quick searches, **custom agents** (in `.claude/agents/`) for domain expertise.
+
+---
+
+## Git Worktrees — Isolating Parallel Mutation
+
+Parallel **read-only** agents (analysis, review, discovery) never conflict — run them freely. Parallel agents that **write files** must NEVER share the same working tree: edits interleave and corrupt each other's work.
+
+### Rule of thumb
+
+| Streams | Approach |
+|---------|----------|
+| All read-only | Parallel, same tree — no isolation needed |
+| Write, but disjoint features | One **git worktree per stream**, merge at the end |
+| Write, overlapping files | **Don't parallelize** — serialize (a worktree doesn't fix a merge conflict, it only postpones it) |
+
+### Commands
+
+```bash
+# One worktree per stream, each on its own branch:
+git worktree add ../<repo>-feature-a -b feature/a
+git worktree add ../<repo>-feature-b -b feature/b
+
+# Each agent works ONLY inside its own worktree directory.
+
+# After merging the branches back (normal flow: branch → PR → merge):
+git worktree remove ../<repo>-feature-a
+git worktree prune
+```
+
+### Rules
+
+1. One worktree per parallel stream — two agents never mutate the same tree.
+2. Each worktree gets its own branch; merge back through the project's normal flow.
+3. **Always remove the worktree after merge** (a forgotten worktree pins its branch and confuses future runs).
+4. The SPEC/PLAN stays in the main tree — worktrees are for code, not for the knowledge base.
 
 ---
 

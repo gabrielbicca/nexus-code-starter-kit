@@ -33,6 +33,11 @@ Show current project and agent status.
    - URL
    - Health check
 
+5. **Code Hygiene Reminder (periodic — kit rule of thumb)**
+   - Check when the last dead-code/tech-debt sweep happened (look for a report in `docs/03_Sprint_Logs/` or a "varredura" entry in recent sprint logs)
+   - If there's no sweep in the last sprint (~2 weeks) or none ever ran, **suggest**: "Considere rodar o `@clean-code-auditor` (varredura de débito técnico e código morto — skill `dead-code-sweep`)"
+   - This is a suggestion, not a blocker — never run the sweep automatically from /status
+
 ---
 
 ## Example Output

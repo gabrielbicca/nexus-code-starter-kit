@@ -438,12 +438,26 @@ Para qualquer **feature nova**, siga o fluxo (detalhado em \`docs/00_Meta/AGENT_
 4. \`@orchestrator\` → implementa seguindo a SPEC/PLAN (ele **exige** a SPEC antes de codar)
 5. \`@test-engineer\` → **obrigatório**: implementa os testes na camada de testes — **toda funcionalidade mapeada em teste**
 6. \`@security-auditor\` → **obrigatório**: review de segurança de todo desenvolvimento novo
-7. \`/verify\` → valida tudo (inclui a checagem spec-driven) antes de concluir
+7. \`/verify\` → valida tudo (inclui a checagem spec-driven) — registre a **saída real** como evidência de conclusão
 
-> 🔴 **Gate de qualidade (regra do kit):** nenhum desenvolvimento novo é concluído sem os passos 5 e 6.
+> 🔴 **Gate de qualidade (regra do kit):** nenhum desenvolvimento novo é concluído sem os passos 5, 6 e 7 — testes, review de segurança e verificação **com evidência** ("deve funcionar" não é evidência).
 > O \`spec_drift.py\` falha se uma SPEC virar \`concluída\` com o Plano de testes pendente ou o Gate aberto.
 
 Bug fixes simples (typo, estilo, ajuste isolado de 1 arquivo) podem pular a SPEC e o \`@orchestrator\`.
+
+---
+
+## 🔌 Integração com Superpowers
+
+Quando o plugin **Superpowers** estiver disponível, ele **complementa** o kit — nunca o substitui:
+
+- O **fluxo principal do projeto é definido pelo Nexus Starter Kit** (spec-driven).
+- Use o Superpowers **apenas como apoio técnico pontual** em: **TDD**, **code review**, **refatoração** e **debugging**.
+- **Não criar** specs, planos ou brainstorms paralelos aos gerados pelo Nexus — \`/spec\` e \`/plan\` do kit são a fonte de verdade.
+- **Não substituir** o fluxo obrigatório: \`/spec → /plan → @orchestrator → @test-engineer → @security-auditor → /verify\`.
+- Em conflito entre uma skill do Superpowers e as regras do kit, **as regras do kit prevalecem**.
+
+> Vale para **qualquer plugin externo**: plugin é ferramenta de apoio **dentro** das etapas do fluxo Nexus, nunca fluxo alternativo.
 
 ---
 
@@ -464,6 +478,8 @@ Bug fixes simples (typo, estilo, ajuste isolado de 1 arquivo) podem pular a SPEC
 - **NUNCA** modificar dados de produção sem aprovação explícita
 - **NUNCA** concluir desenvolvimento novo sem testes na camada de testes (toda funcionalidade mapeada em teste)
 - **NUNCA** concluir desenvolvimento novo sem o review do \`@security-auditor\`
+- **NUNCA** declarar algo concluído sem rodar a verificação e registrar a evidência (saída real dos testes/validação)
+- **NUNCA** usar plugins externos (ex.: Superpowers) para criar specs/planos paralelos ou substituir o fluxo do kit
 
 ---
 

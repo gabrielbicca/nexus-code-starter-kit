@@ -53,6 +53,11 @@ Before any deployment:
 - [ ] CHANGELOG updated
 - [ ] API docs current
 
+### Spec-driven (kit rule)
+- [ ] Every shipped SPEC is closed per `docs/00_Meta/AGENT_FLOW.md` → "Fechamento de branch" (Gate de qualidade complete: tests + security review + verification evidence)
+- [ ] `python .claude/scripts/verify_all.py .` passing — attach the real output as evidence
+- [ ] Development branches merged and deleted (worktrees removed)
+
 ### Ready to deploy? (y/n)
 ```
 

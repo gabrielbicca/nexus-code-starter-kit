@@ -173,14 +173,30 @@ tests/
 
 ---
 
-## 9. Anti-Patterns
+## 9. Condition-Based Waiting (never arbitrary sleeps)
+
+Waiting for **time** is guessing; waiting for a **condition** is knowing.
+
+| ❌ Never | ✅ Instead |
+|----------|-----------|
+| `sleep(5000)` / `waitForTimeout(5000)` | `await expect(locator).toBeVisible()` (auto-wait) |
+| Fixed delay "for the request to finish" | `await page.waitForResponse(<url>)` |
+| Timer to wait an animation/transition | Wait for the end state (attribute, class, URL) |
+| Increase the timeout until it passes | Find the real condition and wait for it |
+
+> A flaky test is a **bug in the test**. Root-cause it (trace viewer, logs) — never fix flakiness by re-running until green or inflating timeouts.
+
+---
+
+## 10. Anti-Patterns
 
 | ❌ Don't | ✅ Do |
 |----------|-------|
 | Test implementation | Test behavior |
-| Hardcode waits | Use auto-wait |
+| Hardcode waits | Wait for conditions (section 9) |
 | Skip cleanup | Isolate tests |
 | Ignore flaky tests | Fix root cause |
+| Skip/comment a failing E2E to unblock CI | Fix or surface it — hiding red games the kit's Quality Gate |
 
 ---
 

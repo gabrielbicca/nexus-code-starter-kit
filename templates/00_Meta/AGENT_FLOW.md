@@ -11,10 +11,10 @@
 4. @orchestrator         implementa seguindo a SPEC/PLAN, acionando os especialistas
 5. @test-engineer        implementa os testes — TODA funcionalidade mapeada em teste  🔴 obrigatório
 6. @security-auditor     review de segurança da implementação                          🔴 obrigatório
-7. /verify               valida tudo (inclui a checagem spec-driven) antes de concluir
+7. /verify               valida tudo (inclui a checagem spec-driven) — a saída real é a EVIDÊNCIA de conclusão
 ```
 
-> Ao fim: atualize o `Status` da SPEC, marque os critérios de aceite `[x]`, marque o **Gate de qualidade** e preencha a **Rastreabilidade → Arquivos de código**.
+> Ao fim: atualize o `Status` da SPEC, marque os critérios de aceite `[x]`, marque o **Gate de qualidade** (com a evidência do `/verify` registrada) e preencha a **Rastreabilidade → Arquivos de código**.
 
 ## 🔴 Gate de qualidade — regra obrigatória do kit
 
@@ -22,10 +22,20 @@
 
 1. **Testes implementados na camada de testes** — toda funcionalidade da SPEC mapeada em pelo menos um teste (`@test-engineer`; E2E com `@qa-automation-engineer`). Nenhuma funcionalidade fica sem teste.
 2. **Review de segurança executado** — `@security-auditor` revisou a implementação e os apontamentos foram tratados.
+3. **Verificação executada com evidência** — `/verify` (ou a suíte de testes) rodou **após** a implementação e a **saída real** foi registrada na SPEC/PR. Concluído se declara com evidência — "deve funcionar" não é evidência.
 
 Isso não é convenção: o `spec_drift.py` **falha** (erro, exit 1) se uma SPEC for marcada `concluída` com o Plano de testes pendente ou o Gate de qualidade aberto — e o gate roda no pre-commit e no CI, se instalados.
 
 Bug fix trivial (typo, estilo, 1 arquivo, sem mudança de contrato/schema) pode pular o `@orchestrator` e a SPEC.
+
+## 🔌 Plugins externos (ex.: Superpowers)
+
+Plugins como o **Superpowers** **complementam** o kit — nunca o substituem:
+
+- O fluxo principal é o do Nexus (spec-driven, acima). Plugins entram como **apoio técnico pontual** dentro das etapas: **TDD**, **code review**, **refatoração** e **debugging**.
+- **Não** criar specs, planos ou brainstorms paralelos aos gerados pelo Nexus — `/spec` e `/plan` do kit são a fonte de verdade.
+- **Não** substituir o fluxo obrigatório `/spec → /plan → @orchestrator → @test-engineer → @security-auditor → /verify`.
+- Em conflito de instruções, **as regras do kit prevalecem**.
 
 ## SPEC × PLAN × ADR × Migration — quem é quem
 
@@ -56,6 +66,7 @@ Bug fix trivial (typo, estilo, 1 arquivo, sem mudança de contrato/schema) pode 
 | Review de segurança (🔴 obrigatório em todo desenvolvimento novo) | `@security-auditor` |
 | Bug / root-cause | `@debugger` |
 | Mapear codebase | `@explorer-agent` |
+| Varredura de débito técnico / código morto (periódica: fim de sprint, pré-release) | `@clean-code-auditor` |
 
 > Lista completa de agentes no `README.md` do kit e em `.claude/agents/`.
 
@@ -73,3 +84,16 @@ python .claude/scripts/verify_all.py . --url http://localhost:3000
 ```
 
 > Atalho: o command **`/verify`** explica e roda essas verificações pra você.
+
+## 🏁 Fechamento de branch — fim de um desenvolvimento
+
+Antes de considerar um desenvolvimento **encerrado** (e antes do merge):
+
+1. **Gate de qualidade completo na SPEC** — testes (toda funcionalidade mapeada), review do `@security-auditor` e verificação com evidência: os três checkboxes marcados.
+2. **`/verify` verde, com a saída real registrada** — a evidência vai na SPEC ou no PR.
+3. **Docs atualizados** — `Status` da SPEC, critérios `[x]`, rastreabilidade, índice `docs/README.md` e arquivos de contexto (`.claude/context/`) afetados.
+4. **`CLAUDE.md` atualizado** — se a mudança alterou regras, arquitetura ou migrations.
+5. **PR referencia a SPEC** — `SPEC-NNN` no título ou corpo; merge só com CI verde.
+6. **Limpeza** — apague a branch após o merge (e o worktree, se usou um para trabalho paralelo — `git worktree remove` + `git worktree prune`).
+
+> Pendência "pra depois" não existe: se sobrou passo, a SPEC é `em-progresso` — não a marque `concluída`.

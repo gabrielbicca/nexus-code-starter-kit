@@ -23,9 +23,9 @@ irm https://raw.githubusercontent.com/gabrielbicca/nexus-code-starter-kit/main/i
 
 ```
 .claude/
-├── agents/      → 21 agentes especializados (@orchestrator, @backend-specialist, ...)
+├── agents/      → 22 agentes especializados (@orchestrator, @backend-specialist, ...)
 ├── commands/    → 15 slash commands (/spec, /adr, /plan, /verify, /dotnet-new, /deploy, ...)
-├── skills/      → 42 cápsulas de conhecimento técnico
+├── skills/      → 43 cápsulas de conhecimento técnico
 ├── scripts/     → Scripts de verificação e automação
 └── context/     → Blocos de contexto importáveis (@imports do CLAUDE.md)
 
@@ -62,7 +62,7 @@ O kit não só **pede** specs — ele **verifica** que o projeto continua coeren
 
 - **Referencial** — toda migration `.sql` tem doc; referências `SPEC-NNN`/`ADR-NNN` no código existem; o índice `docs/README.md` está atualizado.
 - **Conformidade** — toda migration documentada cita uma `SPEC`; uma SPEC `concluída` tem **todos** os critérios de aceite marcados; SPECs ativas têm a rastreabilidade de código preenchida.
-- **Gate de qualidade (regra do kit)** — todo desenvolvimento novo **tem testes implementados na camada de testes** (toda funcionalidade mapeada em teste, via `@test-engineer`) e **passa pelo review do `@security-auditor`**. SPEC `concluída` com o Plano de testes pendente ou o Gate de qualidade aberto é **erro** (exit 1).
+- **Gate de qualidade (regra do kit)** — todo desenvolvimento novo **tem testes implementados na camada de testes** (toda funcionalidade mapeada em teste, via `@test-engineer`), **passa pelo review do `@security-auditor`** e **fecha com a verificação executada e a evidência registrada** (a saída real do `/verify` — "deve funcionar" não é evidência). SPEC `concluída` com o Plano de testes pendente ou o Gate de qualidade aberto é **erro** (exit 1).
 
 Três formas de rodar (use o command **`/verify`** para o caminho fácil):
 
@@ -92,6 +92,7 @@ Na instalação, o CLI oferece instalar o **gate spec-driven na automação**: u
 | `@performance-optimizer` | Bundle size, Core Web Vitals, queries lentas |
 | `@explorer-agent` | Mapeamento de codebases desconhecidos |
 | `@code-archaeologist` | Código legado, refatoração segura |
+| `@clean-code-auditor` | Varredura periódica de débito técnico e código morto + backlog de refatoração |
 | `@project-planner` | Breakdown de tarefas complexas |
 | `@product-manager` | PRDs, user stories, requisitos |
 | `@product-owner` | MVP, backlog, trade-offs de escopo |
@@ -117,6 +118,12 @@ Para qualquer feature nova, invoque o orchestrator:
 ```
 @orchestrator quero criar [descreva a feature]
 ```
+
+### Convivência com outros plugins (ex.: Superpowers)
+
+O kit convive com plugins externos, mas **o fluxo principal é sempre o do Nexus** (`/spec → /plan → @orchestrator → /verify`, com o Gate de qualidade). Plugins como o Superpowers entram só como **apoio pontual** — TDD, code review, refatoração e debugging — sem criar specs/planos paralelos nem substituir o fluxo. Essa regra vai escrita no `CLAUDE.md` gerado e no `AGENT_FLOW.md` instalados no projeto.
+
+> Os melhores padrões do Superpowers já foram **absorvidos nativamente** pelo kit: verificação com evidência antes de concluir, review por tarefa no `@orchestrator`, antipadrões de teste (nunca testar o mock, espera por condição em E2E), git worktrees para trabalho paralelo e checklist de fechamento de branch.
 
 ---
 
