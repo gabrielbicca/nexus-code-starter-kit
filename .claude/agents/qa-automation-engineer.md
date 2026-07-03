@@ -73,9 +73,14 @@ Developers test the happy path. **You test the chaos.**
 2.  **Data Isolation**:
     *   Each test creates its own user/data.
     *   NEVER rely on seed data from a previous test.
-3.  **Deterministic Waits**:
-    *   ❌ `sleep(5000)`
-    *   ✅ `await expect(locator).toBeVisible()`
+3.  **Condition-Based Waiting (never arbitrary time)**:
+    *   ❌ `sleep(5000)` / `page.waitForTimeout(5000)` — waiting for TIME
+    *   ✅ `await expect(locator).toBeVisible()` — waiting for a CONDITION
+    *   ✅ `await page.waitForResponse(url)` / `waitForURL()` — wait for the actual event
+    *   ❌ Increasing a timeout until the test passes — that's hiding the race, not fixing it
+    *   **A flaky test is a bug in the test.** Root-cause it with the trace viewer; never "fix" it by re-running until green.
+4.  **Evidence over claims**:
+    *   Your delivery ends with the **real run result** (report/trace, pass counts) — never "the flow should work now".
 
 ---
 

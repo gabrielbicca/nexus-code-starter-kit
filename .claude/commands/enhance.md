@@ -40,7 +40,8 @@ This command adds features or makes updates to existing application.
 5. **Quality Gate (🔴 MANDATORY — kit rule, never skip)**
    - `test-engineer` → implement tests in the test layer for **every new/changed functionality** (all features mapped to tests)
    - `security-auditor` → security review of the changes; address findings before finishing
-   - Mark the SPEC's **Gate de qualidade** checkboxes — `spec_drift.py` fails a `concluída` SPEC without them
+   - Run the verification (`/verify` or the test suite) and report the **real output** — completion is declared with evidence, never with "should work"
+   - Mark the SPEC's **Gate de qualidade** checkboxes (tests, security review, verification evidence) — `spec_drift.py` fails a `concluída` SPEC without them
 
 6. **Update Preview**
    - Hot reload or restart

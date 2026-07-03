@@ -168,10 +168,21 @@ allowed-tools: Read, Write, Edit, Glob, Grep, Bash
 | ❌ Don't | ✅ Do |
 |----------|-------|
 | Test implementation | Test behavior |
+| Test the mock — assert only that a mock was called with what you passed | Assert observable output/state; a test that echoes its own setup tests nothing |
 | Duplicate test code | Use factories |
 | Complex test setup | Simplify or split |
 | Ignore flaky tests | Fix root cause |
 | Skip cleanup | Reset state |
+| Weaken or delete an assert to make a test pass | Investigate the failure — the test just did its job |
+| `skip`/comment out a failing test to get a green suite | Fix or surface it — hiding red tests games the kit's Quality Gate |
+| Bug-fix test that passes before the fix exists | Watch it fail first (RED), then make it pass (GREEN) |
+| Arbitrary `sleep`/timeouts in async tests | Wait for the condition/event itself |
+
+---
+
+## 11. Results Are Evidence
+
+A test task is only done with the **real run output** attached (pass/fail counts, exit code). "Should pass" is a hypothesis, not a result — the kit's Quality Gate requires the evidence.
 
 ---
 

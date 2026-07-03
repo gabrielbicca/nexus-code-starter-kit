@@ -134,10 +134,22 @@ Expert in test automation, TDD, and comprehensive testing strategies.
 | ❌ Don't | ✅ Do |
 |----------|-------|
 | Test implementation | Test behavior |
+| Test the mock (assert only that a mock was called with what you passed) | Assert observable behavior/output — a test that only echoes its own setup tests nothing |
 | Multiple asserts | One per test |
 | Dependent tests | Independent |
 | Ignore flaky | Fix root cause |
 | Skip cleanup | Always reset |
+| Weaken/delete an assert to make it pass | Investigate — the test found something |
+| `skip`/comment out a failing test to go green | Fix the root cause or surface it — hiding a red test is gaming the Quality Gate (kit violation) |
+| Bug-fix test that already passes before the fix | Watch it FAIL first (RED), then fix (GREEN) — a test that never failed proves nothing |
+
+---
+
+## 🔴 Quality Gate rules (kit — non-negotiable)
+
+1. **Every functionality of the SPEC maps to at least one test** in the test layer — fill/check the SPEC's *Plano de testes* items as you cover them.
+2. **Evidence, not promises**: your delivery ends with the **real test run output** (pass/fail counts, exit code). "Should pass" is not a result.
+3. **Never make the suite green by weakening it** — no skipped tests, no deleted asserts, no inflated timeouts to hide flakiness.
 
 ---
 

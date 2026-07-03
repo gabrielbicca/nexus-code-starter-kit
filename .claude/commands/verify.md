@@ -40,11 +40,11 @@ Roda os validadores do kit e te entrega um relatório claro. Há dois níveis:
    python .claude/scripts/spec_drift.py .
    ```
 
-4. **Resuma o resultado** para o usuário: o que passou, o que falhou e os próximos passos. Se houver checks pulados por "script ausente", diga isso explicitamente (não foram executados).
+4. **Resuma o resultado com a saída real** (números de testes, o que passou/falhou, exit code) — a saída do `/verify` é a **evidência de verificação** que o Gate de qualidade exige. Cole-a na SPEC ou no PR ao concluir; sem evidência, nada é declarado concluído. Se houver checks pulados por "script ausente", diga isso explicitamente (não foram executados).
 
 5. **Se houver falhas spec-driven**, oriente: criar a SPEC faltante (`/spec`), documentar a migration, marcar os critérios de aceite, ou preencher a rastreabilidade na SPEC.
 
-6. **Se a falha for do Gate de qualidade** (regra do kit): a SPEC foi marcada `concluída` sem testes ou sem review de segurança. Oriente a rodar `@test-engineer` (implementar os testes que mapeiam toda funcionalidade da SPEC) e `@security-auditor` (review), e só então marcar os checkboxes do Gate.
+6. **Se a falha for do Gate de qualidade** (regra do kit): a SPEC foi marcada `concluída` sem testes, sem review de segurança ou sem a verificação com evidência. Oriente a rodar `@test-engineer` (implementar os testes que mapeiam toda funcionalidade da SPEC) e `@security-auditor` (review), rodar o `/verify` de novo e **só então**, com a evidência em mãos, marcar os checkboxes do Gate.
 
 ---
 

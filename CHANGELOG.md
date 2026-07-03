@@ -6,6 +6,28 @@ Formato baseado em [Keep a Changelog](https://keepachangelog.com/pt-BR/1.0.0/).
 
 ---
 
+## [1.11.0] — 2026-07-03
+
+> Tema: **convivência com Superpowers + absorção dos melhores padrões dele no kit** — o fluxo principal é sempre o do Nexus (plugins são apoio pontual), e os padrões que valem a pena viram regra nativa: verificação com evidência, review por tarefa, antipadrões de teste, git worktrees e fechamento de branch. De quebra, um agente novo de higiene de código.
+
+### Adicionado
+- **Agente `@clean-code-auditor` (22º)** — varredura periódica (fim de sprint, pré-release) de débito técnico e código morto: componentes nunca renderizados, funções/exports nunca chamados, imports órfãos, variáveis nunca lidas e código comentado sem contexto. Read-only: entrega **Diagnóstico Global** (por diretório/arquivo, com confiança `confirmado`/`suspeito`) + **Plano de Refatoração** em checklist priorizado. O `/status` passa a lembrar quando a varredura está atrasada.
+- **Skill `dead-code-sweep` (43ª)** — o protocolo canônico da varredura: ferramental por ecossistema (knip, ts-prune, depcheck, vulture, ruff, analyzers .NET), checagem obrigatória de falsos positivos (uso dinâmico, DI, convenções de framework) e o formato do relatório.
+- **3º item do Gate de qualidade: "Verificação executada com evidência"** — novo checkbox bloqueante no `Feature-Spec-Template.md`: o `/verify` (ou a suíte) roda **após** a implementação e a **saída real** fica registrada na SPEC/PR — "deve funcionar" não é evidência. O `spec_drift.py` já fiscaliza automaticamente (conta os checkboxes da seção) e as mensagens foram atualizadas.
+- **Review por tarefa no `@orchestrator` (Step 3.5)** — após **cada** entrega de especialista, o orchestrator revisa a entrega contra a SPEC (lendo os arquivos reais, não só o resumo) **antes** de acionar o próximo agente; entrega fora da SPEC volta para o mesmo especialista com feedback concreto. Nada de acumular reviews para o final.
+- **Antipadrões de teste** nos agentes `test-engineer`/`qa-automation-engineer` e nas skills `testing-patterns`/`webapp-testing` — nunca testar o mock, nunca enfraquecer/deletar assert para passar, nunca `skip` em teste vermelho para enganar o Gate, teste de bug tem que falhar antes do fix, e **espera por condição** em E2E (nunca `sleep`/timeout arbitrário; teste flaky é bug do teste).
+- **Git worktrees para trabalho paralelo** na skill `parallel-agents` (+ regra no orchestrator) — streams paralelos que **escrevem** arquivos nunca compartilham a mesma árvore: um worktree por stream, merge pelo fluxo normal e remoção obrigatória depois; streams que tocariam os mesmos arquivos são serializados.
+- **Checklist "Fechamento de branch"** no `templates/00_Meta/AGENT_FLOW.md` — gate completo na SPEC, `/verify` verde com evidência, docs/CLAUDE.md atualizados, PR referenciando a SPEC, merge só com CI verde e limpeza de branch/worktree. O `/deploy` ganhou o grupo "Spec-driven (kit rule)" no pre-flight cobrando isso.
+- **Seção "Integração com Superpowers"** no CLAUDE.md gerado pelo instalador (`bin/cli.js`) e no `docs/CLAUDE.template.md` — Superpowers (e qualquer plugin externo) só como apoio pontual em **TDD, code review, refatoração e debugging**; proibido criar specs/planos/brainstorms paralelos ou substituir o fluxo `/spec → /plan → @orchestrator → @test-engineer → @security-auditor → /verify`. Em conflito, as regras do kit prevalecem. Bloco equivalente no `AGENT_FLOW.md`.
+- **Proibições novas** no CLAUDE.md gerado e no template — "nunca declarar concluído sem rodar a verificação e registrar a evidência" e "nunca usar plugins externos para criar specs/planos paralelos ou substituir o fluxo do kit".
+
+### Alterado
+- **`@orchestrator`** — CHECKPOINT 3 ganhou a linha "Verification evidence"; Step 3 inclui a verificação com evidência; Checkpoint Summary e Best Practices atualizados; regra de worktree em "Conflict Resolution".
+- **Commands `/create`, `/enhance`, `/spec`, `/verify`, `/deploy`, `/status`** — Quality Gate com o passo de evidência; `/verify` trata a saída real como a evidência exigida pelo Gate; `/status` sugere a varredura periódica do `@clean-code-auditor`.
+- **`README.md` e `APRESENTACAO.md`** — contagens 22 agentes / 43 skills, gate com 3 exigências, subseção de convivência com plugins e nota dos padrões absorvidos do Superpowers.
+
+---
+
 ## [1.10.0] — 2026-07-02
 
 > Tema: **Gate de qualidade obrigatório** — todo desenvolvimento novo passa a exigir, como regra do kit: (1) testes implementados na camada de testes com **toda funcionalidade mapeada em teste** e (2) **review do `@security-auditor`**. A regra é verificável, não só por convenção.

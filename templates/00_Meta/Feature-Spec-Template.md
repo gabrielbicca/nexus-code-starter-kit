@@ -79,10 +79,11 @@
 
 ## 7. Gate de qualidade (obrigatório — regra do kit)
 
-> Estes dois itens são **bloqueantes**: o validador `spec_drift.py` acusa **erro** se a SPEC for marcada `concluída` sem eles marcados. Marque somente quando de fato executados.
+> Estes itens são **bloqueantes**: o validador `spec_drift.py` acusa **erro** se a SPEC for marcada `concluída` sem eles marcados. Marque somente quando de fato executados.
 
 - [ ] **Testes implementados** — todas as funcionalidades desta SPEC estão mapeadas em testes na camada de testes (via `@test-engineer` e, para E2E, `@qa-automation-engineer`)
 - [ ] **Review de segurança executado** — `@security-auditor` revisou a implementação e os apontamentos foram tratados
+- [ ] **Verificação executada com evidência** — `/verify` (ou a suíte de testes) rodou **após** a implementação e a **saída real** (testes passando, drift limpo) foi registrada nesta SPEC ou no PR — "deve funcionar" não é evidência
 
 ## 8. Agentes envolvidos
 

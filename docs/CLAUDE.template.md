@@ -121,11 +121,30 @@ OBRIGATÓRIO — sem exceções. A documentação vem PRIMEIRO, o código vem DE
 5. Frontend                               → página + componentes + actions + i18n
 6. Testes (camada de testes) 🔴           → @test-engineer: TODA funcionalidade mapeada em teste (obrigatório)
 7. Review de segurança 🔴                 → @security-auditor revisa tudo (obrigatório)
-8. Atualizar docs/                        → checkboxes, status, Gate de qualidade, índice
-9. Atualizar CLAUDE.md                    → regras, tabelas, migrations
+8. Verificação com evidência 🔴           → /verify — registrar a SAÍDA REAL (nunca concluir por suposição)
+9. Atualizar docs/                        → checkboxes, status, Gate de qualidade, índice
+10. Atualizar CLAUDE.md                   → regras, tabelas, migrations
 ```
 
-> 🔴 **Gate de qualidade (regra do kit):** os passos 6 e 7 são **obrigatórios em todo desenvolvimento novo** — nenhuma funcionalidade fica sem teste na camada de testes e nenhuma feature é concluída sem o review do `@security-auditor`. O `spec_drift.py` falha se uma SPEC virar `concluída` sem isso.
+> 🔴 **Gate de qualidade (regra do kit):** os passos 6, 7 e 8 são **obrigatórios em todo desenvolvimento novo** — nenhuma funcionalidade fica sem teste na camada de testes, nenhuma feature é concluída sem o review do `@security-auditor` e nada é declarado concluído sem a verificação executada **com a evidência registrada** ("deve funcionar" não é evidência). O `spec_drift.py` falha se uma SPEC virar `concluída` sem isso.
+
+---
+
+## 🔌 Integração com Superpowers
+
+Quando o plugin **Superpowers** estiver disponível na sessão, ele **complementa** o kit — nunca o substitui:
+
+- O **fluxo principal do projeto é definido pelo Nexus Starter Kit** (spec-driven).
+- Use o Superpowers **apenas como apoio técnico pontual** em:
+  - **TDD** — ciclo RED-GREEN-REFACTOR durante a implementação
+  - **Code review** — heurísticas e checklists de revisão
+  - **Refatoração** — técnicas de refactor seguro
+  - **Debugging** — investigação sistemática de bugs
+- **Não criar** specs, planos ou brainstorms paralelos aos gerados pelo Nexus — `/spec`, `/plan` e `/brainstorm` do kit são a fonte de verdade.
+- **Não substituir** o fluxo obrigatório: `/spec → /plan → @orchestrator → @test-engineer → @security-auditor → /verify`.
+- Em conflito entre uma skill do Superpowers e as regras deste arquivo/do kit, **as regras do kit prevalecem**.
+
+> A mesma regra vale para **qualquer outro plugin externo**: plugins entram como ferramenta de apoio **dentro** das etapas do fluxo Nexus, nunca como fluxo alternativo.
 
 ---
 
@@ -250,6 +269,7 @@ Use `@nome-do-agente` como label nas SPECs para indicar quem revisou ou implemen
 | `@performance-optimizer` | Bundle, queries lentas, Web Vitals |
 | `@project-planner` | Discovery, breakdown, planejamento de specs |
 | `@code-archaeologist` | Legacy code, refactor planning |
+| `@clean-code-auditor` | Varredura periódica de débito técnico/código morto + backlog de refatoração |
 | `@explorer-agent` | Mapeamento de codebase, "onde está X?" |
 | `@penetration-tester` | Offensive security autorizada |
 
@@ -509,5 +529,7 @@ Toda página do dashboard **deve** ter feedback visual durante carregamento.
 - **Nunca** pular o `@orchestrator` em feature nova
 - **Nunca** concluir desenvolvimento novo sem testes na camada de testes — **toda funcionalidade mapeada em teste** (`@test-engineer`)
 - **Nunca** concluir desenvolvimento novo sem o review do `@security-auditor` (Gate de qualidade do kit)
+- **Nunca** declarar algo concluído sem rodar a verificação e registrar a evidência (saída real dos testes/validação) — "deve funcionar" não é evidência
 - **Nunca** gerar mapeamento (funcionalidades/entidades/regras) em um único arquivo compilado — sempre **um arquivo por módulo** em `docs/02_Specs/Modules/`
 - **Nunca** despejar mapeamentos/índices volumosos no `CLAUDE.md` — esse conteúdo vai para `.claude/context/*.md` (import `@`), mantendo o `CLAUDE.md` enxuto
+- **Nunca** usar plugins externos (ex.: Superpowers) para criar specs/planos paralelos ou substituir o fluxo `/spec → /plan → @orchestrator → /verify` — plugins são apoio pontual (TDD, review, refactor, debugging), o fluxo é do kit

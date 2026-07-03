@@ -19,7 +19,8 @@ Valida, no projeto-alvo, que a documentação spec-driven está coerente:
   7. SPEC `concluída` tem TODOS os itens do "Plano de testes" marcados
      (toda funcionalidade mapeada em teste na camada de testes)
   8. SPEC `concluída` tem o "Gate de qualidade" marcado
-     (testes implementados + review do @security-auditor executado)
+     (testes implementados + review do @security-auditor + verificação
+     executada com evidência registrada)
 
 Tolerante a stacks variados: se docs/ ou migrations não existem, não falha.
 Falha (exit 1) em drift REAL: migration sem doc, referência quebrada,
@@ -291,9 +292,9 @@ def check_spec_conformance(root, specs):
                 err(f"{f.name}: status 'concluída' mas {tests_pend}/{tests_total} item(ns) do Plano de testes pendente(s) — regra do kit: testes obrigatórios na camada de testes.")
                 gate_ok = False
             if gate_total is None:
-                warn(f"{f.name}: sem seção 'Gate de qualidade' (template antigo?) — regra do kit: testes implementados + review do @security-auditor são obrigatórios.")
+                warn(f"{f.name}: sem seção 'Gate de qualidade' (template antigo?) — regra do kit: testes implementados, review do @security-auditor e verificação com evidência são obrigatórios.")
             elif gate_pend and gate_pend > 0:
-                err(f"{f.name}: status 'concluída' mas Gate de qualidade aberto ({gate_pend}/{gate_total}) — testes implementados e review do @security-auditor são obrigatórios.")
+                err(f"{f.name}: status 'concluída' mas Gate de qualidade aberto ({gate_pend}/{gate_total}) — testes implementados, review do @security-auditor e verificação com evidência são obrigatórios.")
                 gate_ok = False
             if not gate_ok:
                 continue
